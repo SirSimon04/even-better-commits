@@ -5,7 +5,7 @@ import ollama from "ollama";
 export class Ollama implements LLM {
   async call(diff: string): Promise<string> {
     const response = await ollama.chat({
-      model: "llama3.1",
+      model: "llama3.2",
       messages: [
         {
           role: "system",

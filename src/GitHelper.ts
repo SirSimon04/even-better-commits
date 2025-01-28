@@ -1,5 +1,15 @@
 import { execSync } from "child_process";
 
+/*
+  This class provides a set of helper functions to interact with Git.
+  It allows you to retrieve staged files, git diff, and commit changes.
+  When you run the script, it will:
+  1. Retrieve a list of staged files.
+  2. Display the changes in the staged files.
+  3. Generate a commit message based on the diff.
+  4. Prompt the user to confirm the commit.
+  5. Commit the changes with the provided message.
+*/
 export class GitHelper {
   getStagedFiles(): string[] {
     try {
