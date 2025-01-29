@@ -3,9 +3,11 @@ import { LLM } from "./LLM";
 import ollama from "ollama";
 
 export class Ollama implements LLM {
+  model: string = "llama3.2";
+
   async call(diff: string): Promise<string> {
     const response = await ollama.chat({
-      model: "llama3.2",
+      model: this.model,
       messages: [
         {
           role: "system",

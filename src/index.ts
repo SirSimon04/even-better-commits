@@ -2,6 +2,7 @@
 
 import * as p from "@clack/prompts";
 import { log } from "@clack/prompts";
+import { multiselect } from '@clack/prompts';
 import {
   intro,
   outro,
@@ -17,6 +18,7 @@ import { MockLLM } from "./llm/MockLLM";
 import { LLM } from "./llm/LLM";
 import { Ollama } from "./llm/Ollama";
 import { PromptBuilder } from "./PromptBuilder";
+import { Config } from "./config/Config";
 
 async function main() {
   intro("Welcome to CAPmits");
@@ -37,6 +39,38 @@ async function main() {
   p.log.info(output);
 
   var diff = git.getGitDiff();
+
+  // ----------------------------------------------------
+  // check the ollama version and prompt user to select
+  const config = Config.getInstance();
+  try {
+    const models = await config.getInstalledOllamaModels();
+    let selectedModel: string;
+    if (models.length === 0) {
+      log.error("No ollama models installed.");
+      return;
+    }
+    if (models.length === 1) {
+      log.info(`Using the only installed ollama model: ${models[0]}`);
+      selectedModel = models[0];
+    } else {
+      const selectModel = await select({
+        message: "Select the model you want to use",
+        options: models.map(model => ({ value: model, label: model })),        
+      });
+  
+      if (selectModel === null) {
+        log.error("No Model selected!");
+      } else {
+        //selectedModel = selectModel;
+        //log.info(`Selected model: ${selectModel}`);
+      }      
+    }
+
+  } catch (error) {
+    log.error("Failed to get installed ollama models");
+    return;
+  }
 
   // ----------------------------------------------------
   // generate message
