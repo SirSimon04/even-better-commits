@@ -2,7 +2,6 @@
 
 import * as p from "@clack/prompts";
 import { log } from "@clack/prompts";
-import { multiselect } from '@clack/prompts';
 import {
   intro,
   outro,
@@ -14,10 +13,8 @@ import {
   text,
 } from "@clack/prompts";
 import { GitHelper } from "./GitHelper";
-import { MockLLM } from "./llm/MockLLM";
 import { LLM } from "./llm/LLM";
 import { Ollama } from "./llm/Ollama";
-import { PromptBuilder } from "./PromptBuilder";
 import { Config } from "./config/Config";
 
 async function main() {
