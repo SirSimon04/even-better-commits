@@ -1,4 +1,5 @@
 export class PromptBuilder {
+  //
   getCommitMessageSystemPrompt(): string {
     let msg =
       "You are an expert in creating git commit messages that adhere to the conventional commit standard. You get the output of git diff and then craft a meaningful commit message based on the changes shown in the git diff output." +

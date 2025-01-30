@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 
 import * as p from "@clack/prompts";
-import { log } from "@clack/prompts";
 import {
+  log,
   intro,
   outro,
   confirm,
@@ -15,10 +15,33 @@ import {
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
 import { Ollama } from "./llm/Ollama";
-import { Config } from "./config/Config";
+import { Config, ConfigFile } from "./config/Config";
+import { LLMFactory } from "./llm/LLMFactory";
 
 async function main() {
   intro("Welcome to CAPmits");
+
+  let llm: LLM;
+  //-----------------------------------------------------
+  // config
+  try {
+    var config = Config.getInstance().getConfigFile();
+
+    llm = LLMFactory.build(config);
+  } catch (error) {
+    var provider = await select({
+      message: "Select a model provider",
+      options: [
+        { value: "ollama", label: "Ollama" },
+        { value: "mock", label: "Simple mock provider" },
+      ],
+    });
+    llm = LLMFactory.buildWithoutConfig(provider.toString());
+    var config: ConfigFile = await llm.setup();
+    Config.getInstance().writeConfig(config);
+  }
+
+  log.info("Using provider: " + llm.toString());
 
   // ----------------------------------------------------
   // git
@@ -39,40 +62,10 @@ async function main() {
 
   // ----------------------------------------------------
   // check the ollama version and prompt user to select
-  const config = Config.getInstance();
-  try {
-    const models = await config.getInstalledOllamaModels();
-    let selectedModel: string;
-    if (models.length === 0) {
-      log.error("No ollama models installed.");
-      return;
-    }
-    if (models.length === 1) {
-      log.info(`Using the only installed ollama model: ${models[0]}`);
-      selectedModel = models[0];
-    } else {
-      const selectModel = await select({
-        message: "Select the model you want to use",
-        options: models.map(model => ({ value: model, label: model })),        
-      });
-  
-      if (selectModel === null) {
-        log.error("No Model selected!");
-      } else {
-        //selectedModel = selectModel;
-        //log.info(`Selected model: ${selectModel}`);
-      }      
-    }
-
-  } catch (error) {
-    log.error("Failed to get installed ollama models");
-    return;
-  }
 
   // ----------------------------------------------------
   // generate message
 
-  var llm: LLM = new Ollama();
   const s = spinner();
   s.start("Generating commit message");
   const commitMessage = await llm.call(diff);
