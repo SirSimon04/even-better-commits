@@ -21,6 +21,7 @@
     "typescript": "^5.7.3"
   },
   "bin": {
-    "capmits": "./src/index.ts"
+    "capmits": "./src/scripts/capmits.ts",
+    "capmits-setup": "./src/scripts/capmits-setup.ts"
   }
 }
