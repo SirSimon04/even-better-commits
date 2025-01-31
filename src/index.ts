@@ -79,24 +79,77 @@ export async function main() {
   // ----------------------------------------------------
   // generate message
 
-  const s = spinner();
-  s.start("Generating commit message");
-  const commitMessage = await llm.call(diff);
-  s.stop("Generated commit message");
+  var commitMessage = await getCommitMessage(diff, llm);
+  var committed = false;
 
-  // ----------------------------------------------------
-  // commit
+  while (!committed) {
+    const continueProcedere: any = await select({
+      message: commitMessage,
+      options: [
+        {
+          value: "c",
+          label: "Confirm the commit",
+        },
+        { value: "r", label: "Generate a new message" },
+        { value: "t", label: "Edit the generated message" },
+      ],
+    });
 
-  const shouldCommit = await p.confirm({
-    message: "Confirm commit with the following message? \n" + commitMessage,
-  });
+    if (isCancel(continueProcedere)) {
+      cancel("Operation cancelled.");
+      return;
+    }
 
-  if (!shouldCommit) {
-    p.cancel("User cancelled commit.");
-    return;
+    if (continueProcedere === "c") {
+      committed = true;
+    } else if (continueProcedere === "r") {
+      commitMessage = await getCommitMessage(diff, llm);
+    } else if (continueProcedere === "t") {
+      try {
+        var commitParts = GitHelper.parseCommitMessage(commitMessage);
+
+        const group = await p.group(
+          {
+            type: () =>
+              text({ message: "Type", initialValue: commitParts.type }),
+            scope: () =>
+              text({ message: "Scope", initialValue: commitParts.scope }),
+            message: () =>
+              text({ message: "Message", initialValue: commitParts.message }),
+          },
+          {
+            // On Cancel callback that wraps the group
+            // So if the user cancels one of the prompts in the group this function will be called
+            onCancel: ({ results }) => {
+              p.cancel("Operation cancelled.");
+              return;
+            },
+          },
+        );
+
+        commitMessage = group.type + "(" + group.scope + "): " + group.message;
+      } catch (error) {
+        const newMessage = await text({
+          message:
+            "Generated Message was not in Conventional Commits format. Change the message here.",
+          initialValue: commitMessage,
+        });
+
+        commitMessage = newMessage.toString();
+      }
+    }
   }
 
   git.commit(commitMessage);
 
   outro("Goodbye!");
+}
+
+async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
+  const s = spinner();
+  s.start("Generating commit message");
+  const commitMessage = await llm.call(diff);
+  s.stop("Generated commit message.");
+
+  return commitMessage;
 }
