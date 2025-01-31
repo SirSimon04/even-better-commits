@@ -1,5 +1,11 @@
 import { execSync } from "child_process";
 
+type CommitParts = {
+  type: string;
+  scope?: string;
+  message: string;
+};
+
 export class GitHelper {
   getStagedFiles(): string[] {
     try {
@@ -89,10 +95,20 @@ export class GitHelper {
 
       // Run `git add` on all provided files
       execSync(`git add ${files.join(" ")}`, { stdio: "inherit" });
-
-      console.log("Files staged successfully.");
     } catch (error) {
       console.error("Failed to stage files:", error);
     }
+  }
+
+  static parseCommitMessage(commit: string): CommitParts {
+    const regex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
+    const match = commit.match(regex);
+
+    if (!match) {
+      throw new Error("Invalid commit message format");
+    }
+
+    const [, type, scope, message] = match;
+    return { type, ...(scope ? { scope } : {}), message };
   }
 }
