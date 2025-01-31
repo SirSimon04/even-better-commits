@@ -15,14 +15,14 @@ export class LLMFactory {
     }
   }
 
-  static buildWithoutConfig(provider: string): LLM {
-    switch (provider) {
-      case "ollama":
-        return new Ollama();
-      case "mock":
-        return new MockLLM();
-      default:
-        throw new Error("NO_MODEL_FOUND");
-    }
-  }
+  //static buildWithoutConfig(provider: string): LLM {
+  //  switch (provider) {
+  //    case "ollama":
+  //      return new Ollama();
+  //    case "mock":
+  //      return new MockLLM();
+  //    default:
+  //      throw new Error("NO_MODEL_FOUND");
+  //  }
+  //}
 }

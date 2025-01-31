@@ -9,10 +9,10 @@ import { join } from "path";
 import { ConfigFile } from "../config/Config";
 
 export class Ollama implements LLM {
-  model: string;
+  model!: string;
 
-  constructor(config?: ConfigFile) {
-    this.model = config?.providerDetails.model ?? "";
+  constructor(config: ConfigFile) {
+    this.setDetails(config);
   }
 
   async call(diff: string): Promise<string> {
@@ -65,6 +65,10 @@ export class Ollama implements LLM {
       }
     }
     throw new Error("Ollama setup failed");
+  }
+
+  setDetails(config: ConfigFile): void {
+    this.model = config.providerDetails.model;
   }
 
   private ollamaPath: string = join(
