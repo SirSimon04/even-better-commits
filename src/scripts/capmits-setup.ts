@@ -1,5 +1,16 @@
 #!/usr/bin/env ts-node
 
 import { setup } from "../setup";
+import { intro, outro } from "@clack/prompts";
 
-setup();
+async function main() {
+  intro("Setup CAPmits");
+  try {
+    await setup();
+    outro("Setup complete.");
+  } catch (error) {
+    outro("Setup canceled.");
+  }
+}
+
+main();
