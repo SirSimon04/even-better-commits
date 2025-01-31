@@ -67,6 +67,7 @@ export class GitHelper {
         .filter(
           (line) =>
             line.startsWith(" M") || // Modified but unstaged
+            line.startsWith("MM") || // Staged and modified
             line.startsWith("??") || // Untracked files
             line.startsWith(" D"), // Deleted but unstaged
         )

@@ -9,6 +9,7 @@ import {
   isCancel,
   cancel,
   text,
+  multiselect,
 } from "@clack/prompts";
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
@@ -42,6 +43,22 @@ export async function main() {
 
   // ----------------------------------------------------
   // git
+
+  var unstagedFiles = git.getUnstagedFiles();
+
+  if (unstagedFiles.length > 0) {
+    const filesToStage: any = await multiselect({
+      message: "Select files to stage",
+      options: [
+        { value: ".", label: "." },
+        ...unstagedFiles.map((file) => ({ value: file, label: file })),
+      ],
+      required: false,
+    });
+
+    if (filesToStage.length > 0) git.stageFiles(filesToStage);
+  }
+
   var stagedFiles = git.getStagedFiles();
   if (stagedFiles.length === 0) {
     outro("No Changes to commit.");
