@@ -19,6 +19,12 @@ import { setup } from "./setup";
 export async function main() {
   intro("Welcome to CAPmits");
 
+  var git = new GitHelper();
+  if (!git.inGitRepository()) {
+    outro("Not in a git repository. Exiting...");
+    return;
+  }
+
   let llm: LLM;
   //-----------------------------------------------------
   // config
@@ -36,7 +42,6 @@ export async function main() {
 
   // ----------------------------------------------------
   // git
-  var git = new GitHelper();
   var stagedFiles = git.getStagedFiles();
   if (stagedFiles.length === 0) {
     outro("No Changes to commit.");

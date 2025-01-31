@@ -46,4 +46,13 @@ export class GitHelper {
       console.error("Failed to commit changes:", error);
     }
   }
+
+  inGitRepository(): boolean {
+    try {
+      execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
