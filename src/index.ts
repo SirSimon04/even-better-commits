@@ -1,5 +1,3 @@
-#!/usr/bin/env ts-node
-
 import * as p from "@clack/prompts";
 import {
   log,
@@ -14,11 +12,11 @@ import {
 } from "@clack/prompts";
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
-import { Ollama } from "./llm/Ollama";
-import { Config, ConfigFile } from "./config/Config";
+import { Config } from "./config/Config";
 import { LLMFactory } from "./llm/LLMFactory";
+import { setup } from "./setup";
 
-async function main() {
+export async function main() {
   intro("Welcome to CAPmits");
 
   let llm: LLM;
@@ -29,16 +27,9 @@ async function main() {
 
     llm = LLMFactory.build(config);
   } catch (error) {
-    var provider = await select({
-      message: "Select a model provider",
-      options: [
-        { value: "ollama", label: "Ollama" },
-        { value: "mock", label: "Simple mock provider" },
-      ],
-    });
-    llm = LLMFactory.buildWithoutConfig(provider.toString());
-    var config: ConfigFile = await llm.setup();
-    Config.getInstance().writeConfig(config);
+    log.info("No config file found. Setting up...");
+    llm = LLMFactory.buildWithoutConfig("mock");
+    llm = await setup();
   }
 
   log.info("Using provider: " + llm.toString());
@@ -87,5 +78,3 @@ async function main() {
 
   outro("Goodbye!");
 }
-
-main();
