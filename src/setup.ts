@@ -1,18 +1,5 @@
-import * as p from "@clack/prompts";
-import {
-  log,
-  intro,
-  outro,
-  confirm,
-  select,
-  spinner,
-  isCancel,
-  cancel,
-  text,
-} from "@clack/prompts";
-import { GitHelper } from "./GitHelper";
+import { log, select } from "@clack/prompts";
 import { LLM } from "./llm/LLM";
-import { Ollama } from "./llm/Ollama";
 import { Config, ConfigFile } from "./config/Config";
 import { LLMFactory } from "./llm/LLMFactory";
 
@@ -24,8 +11,14 @@ export async function setup(): Promise<LLM> {
       { value: "mock", label: "Simple mock provider" },
     ],
   });
-  var llm = LLMFactory.buildWithoutConfig(provider.toString());
+
+  var llm = LLMFactory.build({
+    provider: provider.toString(),
+    providerDetails: {},
+  });
+
   var config: ConfigFile = await llm.setup();
+  llm.setDetails(config);
   Config.getInstance().writeConfig(config);
 
   log.info("Config file written to " + Config.getInstance().configFilePath);

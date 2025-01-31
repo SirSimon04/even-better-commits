@@ -34,7 +34,7 @@ export async function main() {
     llm = LLMFactory.build(config);
   } catch (error) {
     log.info("No config file found. Setting up...");
-    llm = LLMFactory.buildWithoutConfig("mock");
+    //llm = LLMFactory.buildWithoutConfig("mock");
     llm = await setup();
   }
 
