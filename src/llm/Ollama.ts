@@ -1,5 +1,5 @@
 import { PromptBuilder } from "../PromptBuilder";
-import { log, select } from "@clack/prompts";
+import { isCancel, log, select } from "@clack/prompts";
 import { exec } from "child_process";
 import { log as cLog } from "console";
 import { existsSync, readdirSync } from "fs";
@@ -52,7 +52,7 @@ export class Ollama implements LLM {
         options: models.map((model) => ({ value: model, label: model })),
       });
 
-      if (selectModel === null) {
+      if (isCancel(selectModel) || selectModel === null) {
         throw new Error("No Model selected!");
       } else {
         this.model = selectModel.toString();
