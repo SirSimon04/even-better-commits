@@ -28,7 +28,7 @@ export class Ollama implements LLM {
         {
           role: "user",
           content:
-            "This is the diff where the commit message needs to be created for: \n \n" +
+            "Current Git Diff: \n \n" +
             diff,
         },
       ],
