@@ -28,7 +28,7 @@ export class Ollama implements LLM {
         {
           role: "user",
           content:
-            "Current Git Diff: \n \n" +
+            "```diff \n \n" +
             diff,
         },
       ],
