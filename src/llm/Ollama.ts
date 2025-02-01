@@ -11,6 +11,8 @@ import { ConfigFile } from "../config/Config";
 export class Ollama implements LLM {
   model!: string;
 
+  private ollamaPath: string = join(process.env.HOME || process.env.USERPROFILE || "", ".ollama", );
+
   constructor(config: ConfigFile) {
     this.setDetails(config);
   }
@@ -71,11 +73,6 @@ export class Ollama implements LLM {
     this.model = config.providerDetails.model;
   }
 
-  private ollamaPath: string = join(
-    process.env.HOME || process.env.USERPROFILE || "",
-    ".ollama",
-  );
-
   private isOllamaInstalled(): boolean {
     return existsSync(this.ollamaPath);
   }
@@ -104,6 +101,6 @@ export class Ollama implements LLM {
   }
 
   toString(): string {
-    return "Ollama " + this.model;
+    return "Ollama with " + this.model + " model";
   }
 }

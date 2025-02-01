@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 import {
   log,
-  intro,
+  intro, 
   outro,
   confirm,
   select,
@@ -39,7 +39,7 @@ export async function main() {
     llm = await setup();
   }
 
-  log.info("Using provider: " + llm.toString());
+  log.info("Using " + llm.toString());
 
   // ----------------------------------------------------
   // git
@@ -66,7 +66,7 @@ export async function main() {
   }
 
   var output =
-    "Changes in the following files will be commited:\n \n" +
+    "Changes in the following files will be committed:\n \n" +
     stagedFiles.join("\n");
 
   p.log.info(output);
