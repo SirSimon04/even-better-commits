@@ -140,9 +140,8 @@ export async function main() {
     }
   }
 
+  outro("Committing changes...");
   git.commit(commitMessage);
-
-  outro("Goodbye!");
 }
 
 async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
