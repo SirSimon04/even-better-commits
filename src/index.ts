@@ -18,7 +18,7 @@ import { LLMFactory } from "./llm/LLMFactory";
 import { setup } from "./setup";
 
 export async function main() {
-  clearScreen();
+  clearScreen(); // Clear the screen to make fullscreen
   intro("Welcome to CAPmits");
 
   var git = new GitHelper();
