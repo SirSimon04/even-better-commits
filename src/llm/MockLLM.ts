@@ -4,11 +4,9 @@ import { LLM } from "./LLM";
 export class MockLLM implements LLM {
   constructor(config: ConfigFile) {}
 
-  configure(config: ConfigFile): void {
-    throw new Error("Method not implemented.");
-  }
+  configure(config: ConfigFile): void {}
   setup(): Promise<ConfigFile> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve({ provider: "mock", providerDetails: {} });
   }
 
   async call(prompt: string): Promise<string> {
