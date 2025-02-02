@@ -11,7 +11,7 @@
   "description": "",
   "dependencies": {
     "@clack/prompts": "^0.9.1",
-    "@sap-ai-sdk/foundation-models": "^1.7.0",
+    "@sap-ai-sdk/orchestration": "^1.7.0",
     "@types/conf": "^2.1.0",
     "conf": "^13.1.0",
     "ollama": "^0.5.12"
