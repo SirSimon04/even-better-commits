@@ -19,6 +19,7 @@ import { LLMFactory } from "./llm/LLMFactory";
 import { setup } from "./setup";
 
 export async function main() {
+  clearScreen();
   intro("Welcome to CAPmits");
 
   var git = new GitHelper();
@@ -209,6 +210,7 @@ export async function main() {
 
   outro("Committing changes...");
   git.commit(commitMessage);
+  restoreScreen();
 }
 
 async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
@@ -218,4 +220,14 @@ async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
   s.stop("Generated commit message.");
 
   return commitMessage;
+}
+
+// Function to clear the screen
+function clearScreen() {
+  console.clear(); // Clears terminal
+  process.stdout.write("\x1b[?25l"); // Hide cursor
+}
+
+function restoreScreen() {
+  process.stdout.write("\x1b[?25h"); // Show cursor
 }
