@@ -11,7 +11,10 @@ import { ConfigFile } from "../config/Config";
 export class Ollama implements LLM {
   model!: string;
 
-  private ollamaPath: string = join(process.env.HOME || process.env.USERPROFILE || "", ".ollama", );
+  private ollamaPath: string = join(
+    process.env.HOME || process.env.USERPROFILE || "",
+    ".ollama",
+  );
 
   constructor(config: ConfigFile) {
     this.setDetails(config);
@@ -27,9 +30,7 @@ export class Ollama implements LLM {
         },
         {
           role: "user",
-          content:
-            "```diff \n \n" +
-            diff,
+          content: "```diff \n \n" + diff + "```",
         },
       ],
     });

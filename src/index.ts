@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 import {
   log,
-  intro, 
+  intro,
   outro,
   confirm,
   select,
@@ -115,35 +115,73 @@ export async function main() {
                 message: "Type",
                 initialValue: commitParts.type,
                 options: [
-                  { value: 'feat', label: 'feat', hint: "A new feature" },
-                  { value: 'fix', label: 'fix', hint: "A bug fix" },
-                  { value: 'docs', label: 'docs', hint: "Documentation only changes" },
-                  { value: 'refactor', label: 'refactor', hint: "A code change that neither fixes a bug nor adds a feature" },
-                  { value: 'perf', label: 'perf', hint: "A code change that improves performance" },
-                  { value: 'test', label: 'test', hint: "Adding missing tests or correcting existing tests" },
-                  { value: 'build', label: 'build' , hint: "Changes that affect the build system or external dependencies" },
-                  { value: 'ci', label: 'ci', hint: "Changes to our CI configuration files and scripts" },
-                  { value: 'chore', label: 'chore', hint: "Other changes that don't modify src or test files" },
-                ]
-              }),              
+                  { value: "feat", label: "feat", hint: "A new feature" },
+                  { value: "fix", label: "fix", hint: "A bug fix" },
+                  {
+                    value: "docs",
+                    label: "docs",
+                    hint: "Documentation only changes",
+                  },
+                  {
+                    value: "refactor",
+                    label: "refactor",
+                    hint: "A code change that neither fixes a bug nor adds a feature",
+                  },
+                  {
+                    value: "perf",
+                    label: "perf",
+                    hint: "A code change that improves performance",
+                  },
+                  {
+                    value: "test",
+                    label: "test",
+                    hint: "Adding missing tests or correcting existing tests",
+                  },
+                  {
+                    value: "build",
+                    label: "build",
+                    hint: "Changes that affect the build system or external dependencies",
+                  },
+                  {
+                    value: "ci",
+                    label: "ci",
+                    hint: "Changes to our CI configuration files and scripts",
+                  },
+                  {
+                    value: "chore",
+                    label: "chore",
+                    hint: "Other changes that don't modify src or test files",
+                  },
+                ],
+              }),
             scope: () =>
               select({
                 message: "Scope",
-                initialValue: commitParts.scope || '',
+                initialValue: commitParts.scope || "",
                 options: [
-                  { value: 'app', label: 'app', hint: "UI-related content" },
-                  { value: 'srv', label: 'srv', hint: "Service-related content" },
-                  { value: 'db', label: 'db', hint: "Domain models and database-related content" },
-                  { value: 'tools', label: 'tools', hint: "Development tools and scripts" },
-                  { value: '', label: 'none' },       
-                ]           
-              }),              
+                  { value: "app", label: "app", hint: "UI-related content" },
+                  {
+                    value: "srv",
+                    label: "srv",
+                    hint: "Service-related content",
+                  },
+                  {
+                    value: "db",
+                    label: "db",
+                    hint: "Domain models and database-related content",
+                  },
+                  {
+                    value: "tools",
+                    label: "tools",
+                    hint: "Development tools and scripts",
+                  },
+                  { value: "", label: "none" },
+                ],
+              }),
             message: () =>
               text({ message: "Message", initialValue: commitParts.message }),
           },
           {
-            // On Cancel callback that wraps the group
-            // So if the user cancels one of the prompts in the group this function will be called
             onCancel: ({ results }) => {
               p.cancel("Operation cancelled.");
               return;
@@ -171,8 +209,9 @@ export async function main() {
 async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
   const s = spinner();
   s.start("Generating commit message");
-  const commitMessage = await llm.call(diff);  
+  const commitMessage = await llm.call(diff);
   s.stop("Generated commit message.");
 
   return commitMessage;
 }
+
