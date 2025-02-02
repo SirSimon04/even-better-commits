@@ -45,16 +45,18 @@ export async function main() {
   // ----------------------------------------------------
   // git
   var stagedFiles = git.getStagedFiles();
-  log.success(
-    "Changes to be committed:\n" +
-      stagedFiles.map((file) => color.green(file)).join("\n"),
-  );
+  if (stagedFiles.length > 0) {
+    log.success(
+      "Changes to be committed:\n" +
+        stagedFiles.map((file) => color.green(file)).join("\n"),
+    );
+  }
 
   var unstagedFiles = git.getUnstagedFiles();
 
   if (unstagedFiles.length > 0) {
     const filesToStage: any = await multiselect({
-      message: "Select files to commit",
+      message: "Select files to stage",
       options: [
         { value: ".", label: "." },
         ...unstagedFiles.map((file) => ({ value: file, label: file })),
