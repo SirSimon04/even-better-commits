@@ -8,6 +8,7 @@ export async function setup(): Promise<LLM> {
     message: "Select a model provider2",
     options: [
       { value: "ollama", label: "Ollama" },
+      { value: "aicore", label: "SAP AI Core" },
       { value: "mock", label: "Simple mock provider" },
     ],
   });

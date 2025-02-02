@@ -58,7 +58,6 @@ export class Ollama implements LLM {
       if (isCancel(selectModel) || selectModel === null) {
         throw new Error("No Model selected!");
       } else {
-        this.model = selectModel.toString();
         return {
           provider: "ollama",
           providerDetails: {
