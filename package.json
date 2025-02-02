@@ -14,7 +14,8 @@
     "@sap-ai-sdk/orchestration": "^1.7.0",
     "@types/conf": "^2.1.0",
     "conf": "^13.1.0",
-    "ollama": "^0.5.12"
+    "ollama": "^0.5.12",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.12.0",

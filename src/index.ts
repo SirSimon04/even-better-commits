@@ -11,6 +11,7 @@ import {
   text,
   multiselect,
 } from "@clack/prompts";
+import color from "picocolors";
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
 import { Config } from "./config/Config";
@@ -43,12 +44,17 @@ export async function main() {
 
   // ----------------------------------------------------
   // git
+  var stagedFiles = git.getStagedFiles();
+  log.success(
+    "Changes to be committed:\n" +
+      stagedFiles.map((file) => color.green(file)).join("\n"),
+  );
 
   var unstagedFiles = git.getUnstagedFiles();
 
   if (unstagedFiles.length > 0) {
     const filesToStage: any = await multiselect({
-      message: "Select files to stage",
+      message: "Select files to commit",
       options: [
         { value: ".", label: "." },
         ...unstagedFiles.map((file) => ({ value: file, label: file })),
@@ -59,7 +65,7 @@ export async function main() {
     if (filesToStage.length > 0) git.stageFiles(filesToStage);
   }
 
-  var stagedFiles = git.getStagedFiles();
+  stagedFiles = git.getStagedFiles();
   if (stagedFiles.length === 0) {
     outro("No Changes to commit.");
     return;
@@ -72,9 +78,6 @@ export async function main() {
   p.log.info(output);
 
   var diff = git.getGitDiff();
-
-  // ----------------------------------------------------
-  // check the ollama version and prompt user to select
 
   // ----------------------------------------------------
   // generate message
@@ -214,4 +217,3 @@ async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
 
   return commitMessage;
 }
-
