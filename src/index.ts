@@ -210,7 +210,6 @@ export async function main() {
 
   outro("Committing changes...");
   git.commit(commitMessage);
-  restoreScreen();
 }
 
 async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
@@ -228,6 +227,6 @@ function clearScreen() {
   process.stdout.write("\x1b[?25l"); // Hide cursor
 }
 
-function restoreScreen() {
+export function restoreScreen() {
   process.stdout.write("\x1b[?25h"); // Show cursor
 }

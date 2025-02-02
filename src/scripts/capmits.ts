@@ -1,5 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { main } from "..";
+import { main, restoreScreen } from "..";
 
 main();
+restoreScreen();
