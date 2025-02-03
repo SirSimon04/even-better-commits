@@ -1,11 +1,4 @@
-import { GitHelper } from '../GitHelper'; // Adjust the path as needed
-import { CommitParts } from '../GitHelper'; // Adjust the path as needed
-
-// type CommitParts = {
-//     type: string;
-//     scope?: string;
-//     message: string;
-// };
+import { GitHelper, CommitParts } from '../GitHelper';
 
 describe('parseCommitMessage', () => {
   it('should parse a valid commit message with type, scope, and message', () => {
