@@ -1,29 +1,27 @@
 # capmits
 A CLI tool to generate commit messages with the help of AI.
 
-## Usage during development
+## Installation (Development)
 ```
-# in the root of the project
+# In the root of the project (one-time setup):
 npm link
 chmod +x src/scripts/capmits.ts
 chmod +x src/scripts/capmits-setup.ts
 
-# anywhere in your system
+# Anywhere in your system:
 capmits
-capmits-setup
 ```
-If no config file is found when executing `capmits`, it guides through the setup process. This can be manually invoked to change the config with `capmits-setup`
+capmits will automatically guide you through the initial setup if a configuration file doesn't exist.  You can also run `capmits-setup` manually at any time to reconfigure or update your settings.
 
 ## Providers
+capmits supports multiple AI providers:
 ### Ollama
-All locally installed models can be used.
+capmits can use any locally installed Ollama model. Simply ensure your desired model is available to Ollama. No further configuration within capmits is required for Ollama.
 
-### AI Core
-Use all models available in the SAP AI Core.
-
-Setup your credentials by exporting the following variable to your env. (This will be changed later to something like a config file)
+### SAP AI Core
+To use **SAP AI Core**, you need to configure your credentials. Currently, this is done by setting the `AICORE_SERVICE_KEY` environment variable.
 ```
-AICORE_SERVICE_KEY='{
+export AICORE_SERVICE_KEY='{
   "url": "",
   "clientid": "",
   "clientsecret": "",
