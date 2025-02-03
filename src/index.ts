@@ -194,7 +194,8 @@ export async function main() {
           },
         );
 
-        commitMessage = group.type + "(" + group.scope + "): " + group.message;
+        let scope = group.scope ? `(${group.scope})` : "";
+        commitMessage = group.type + scope + ": " + group.message;
       } catch (error) {
         const newMessage = await text({
           message:

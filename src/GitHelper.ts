@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 
-type CommitParts = {
+export type CommitParts = {
   type: string;
   scope?: string;
   message: string;
@@ -101,14 +101,17 @@ export class GitHelper {
   }
 
   static parseCommitMessage(commit: string): CommitParts {
+    const trimmedCommit = commit.trim();
     const regex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
-    const match = commit.match(regex);
+    const result = trimmedCommit.match(regex);
 
-    if (!match) {
-      throw new Error("Invalid commit message format");
+    if (!result) {
+      //throw new Error("Invalid commit message format");
+      // Instead of throwing an error, return an object with empty strings
+      return { type: "", scope: "", message: "" }; 
     }
 
-    const [, type, scope, message] = match;
+    const [, type, scope, message] = result;
     return { type, ...(scope ? { scope } : {}), message };
   }
 }
