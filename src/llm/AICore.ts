@@ -80,6 +80,6 @@ export class AICore implements LLM {
   }
 
   toString(): string {
-    return "Ollama with " + this.model + " model";
+    return "SAP AI Core with " + this.model + " model";
   }
 }

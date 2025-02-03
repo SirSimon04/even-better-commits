@@ -2,8 +2,7 @@ import * as p from "@clack/prompts";
 import {
   log,
   intro,
-  outro,
-  confirm,
+  outro,  
   select,
   spinner,
   isCancel,
