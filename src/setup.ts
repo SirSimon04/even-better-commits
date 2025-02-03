@@ -5,7 +5,7 @@ import { LLMFactory } from "./llm/LLMFactory";
 
 export async function setup(): Promise<LLM> {
   var provider = await select({
-    message: "Select a model provider2",
+    message: "Select a model provider",
     options: [
       { value: "ollama", label: "Ollama" },
       { value: "aicore", label: "SAP AI Core" },
