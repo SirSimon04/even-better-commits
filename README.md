@@ -5,8 +5,8 @@ A CLI tool to generate commit messages with the help of AI.
 ```
 # In the root of the project (one-time setup):
 npm link
-chmod +x src/scripts/capmits.ts
-chmod +x src/scripts/capmits-setup.ts
+chmod +x build/scripts/capmits.js
+chmod +x build/scripts/capmits-setup.js
 
 # Anywhere in your system:
 capmits
