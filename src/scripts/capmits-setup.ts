@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 
 import { setup } from "../setup";
 import { intro, outro } from "@clack/prompts";
