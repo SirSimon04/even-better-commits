@@ -1,6 +1,9 @@
 # capmits
 A CLI tool to generate commit messages with the help of AI.
 
+## Prerequisites
+- node version >= 22
+
 ## Installation (Development)
 ```
 # In the root of the project (one-time setup):
