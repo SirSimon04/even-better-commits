@@ -1,7 +1,7 @@
 import { OrchestrationClient } from "@sap-ai-sdk/orchestration";
 import { ConfigFile } from "../config/Config";
 import { LLM } from "./LLM";
-import { isCancel, select } from "@clack/prompts";
+import { isCancel, select, log } from "@clack/prompts";
 import { PromptBuilder } from "../PromptBuilder";
 
 export class AICore implements LLM {
@@ -17,16 +17,7 @@ export class AICore implements LLM {
         model_name: this.model,
       },
       templating: {
-        template: [
-          {
-            role: "system",
-            content: new PromptBuilder().getCommitMessageSystemPrompt(),
-          },
-          {
-            role: "user",
-            content: "```diff \n \n" + diff + "```",
-          },
-        ],
+        template: new PromptBuilder().buildTemplate(diff),
       },
     });
 

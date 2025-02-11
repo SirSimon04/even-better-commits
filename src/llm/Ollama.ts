@@ -23,16 +23,7 @@ export class Ollama implements LLM {
   async call(diff: string): Promise<string> {
     const response = await ollama.chat({
       model: this.model,
-      messages: [
-        {
-          role: "system",
-          content: new PromptBuilder().getCommitMessageSystemPrompt(),
-        },
-        {
-          role: "user",
-          content: "```diff \n \n" + diff + "```",
-        },
-      ],
+      messages: new PromptBuilder().buildTemplate(diff),
     });
     return response.message.content;
   }

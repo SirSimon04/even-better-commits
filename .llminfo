@@ -1,0 +1,1 @@
+This is the project capmits. It is a project to create commit messages for git with the help of AI. These commit messages must follow the conventional commit style. After generating the message, the user is prompted whether they want to commit or change the message.
