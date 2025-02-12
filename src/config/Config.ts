@@ -9,13 +9,13 @@ export type ConfigFile = {
 
 export class Config {
   private static instance: Config;
-  private static readonly _CAPMITS_CONFIG_FILE: string = path.join(
+  private static readonly _EBC_CONFIG_FILE: string = path.join(
     os.homedir(),
-    ".capmits.json",
+    ".ebc-setup.json",
   );
 
   public get configFilePath(): string {
-    return Config._CAPMITS_CONFIG_FILE;
+    return Config._EBC_CONFIG_FILE;
   }
 
   private constructor() {}
@@ -28,12 +28,12 @@ export class Config {
   }
 
   public getConfigFile(): ConfigFile {
-    if (!fs.existsSync(Config._CAPMITS_CONFIG_FILE)) {
+    if (!fs.existsSync(Config._EBC_CONFIG_FILE)) {
       throw new Error("Config file does not exist.");
     }
 
     try {
-      const data = fs.readFileSync(Config._CAPMITS_CONFIG_FILE, "utf-8");
+      const data = fs.readFileSync(Config._EBC_CONFIG_FILE, "utf-8");
       return JSON.parse(data) as ConfigFile;
     } catch (error) {
       throw new Error("Error reading config file:" + error);
@@ -43,7 +43,7 @@ export class Config {
   public writeConfig(config: ConfigFile): void {
     try {
       fs.writeFileSync(
-        Config._CAPMITS_CONFIG_FILE,
+        Config._EBC_CONFIG_FILE,
         JSON.stringify(config, null, 2),
         "utf-8",
       );

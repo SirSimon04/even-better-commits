@@ -19,9 +19,9 @@ export class PromptBuilder {
     }
   }
 
-  getFromLLMInfoFile() {
+  getEbcInfoFile() {
     try {
-      const filePath = path.join(process.cwd(), ".llminfo");
+      const filePath = path.join(process.cwd(), ".ebcinfo");
 
       const msg = fs.readFileSync(filePath, "utf-8");
 
@@ -38,9 +38,9 @@ export class PromptBuilder {
       content: this.getCommitMessageSystemPrompt(),
     });
 
-    const llmInfo = this.getFromLLMInfoFile();
+    const llmInfo = this.getEbcInfoFile();
     if (llmInfo) {
-      log.info("Using from local .llminfo file");
+      log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
         content: `Here is some additional information that describes the project where the change is made: \n \n ${llmInfo}`,

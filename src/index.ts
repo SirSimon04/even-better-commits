@@ -2,7 +2,7 @@ import * as p from "@clack/prompts";
 import {
   log,
   intro,
-  outro,  
+  outro,
   select,
   spinner,
   isCancel,
@@ -19,7 +19,7 @@ import { setup } from "./setup";
 
 export async function main() {
   clearScreen(); // Clear the screen to make fullscreen
-  intro("Welcome to CAPmits");
+  intro("Welcome to even-better-commits!");
 
   var git = new GitHelper();
   if (!git.inGitRepository()) {
