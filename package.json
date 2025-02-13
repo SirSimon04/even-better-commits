@@ -38,5 +38,9 @@
   },
   "jest": {
     "rootDir": "./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SirSimon04/even-better-commits"
   }
 }
