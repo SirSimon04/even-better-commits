@@ -1,6 +1,6 @@
 {
   "name": "even-better-commits",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./build/scripts/ebc.js",
   "scripts": {
     "start": "ts-node src/index.ts",
