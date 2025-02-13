@@ -6,13 +6,9 @@ A CLI tool to generate commit messages with the help of AI.
 
 ## Installation (Development)
 ```
-# In the root of the project (one-time setup):
-npm run build
-npm link
-chmod +x build/scripts/ebv.js
-chmod +x build/scripts/ebc-setup.js
+npm i -g even-better-commits
 
-# Anywhere in your system:
+# To run the CLI
 ebc
 ebc-setup
 ```
@@ -20,6 +16,7 @@ even-better-commits will automatically guide you through the initial setup if a 
 
 ## Providers
 even-better-commits supports multiple AI providers:
+
 ### Ollama
 even-better-commits can use any locally installed Ollama model. Simply ensure your desired model is available to Ollama. No further configuration within capmits is required for Ollama.
 
