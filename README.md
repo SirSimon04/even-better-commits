@@ -51,3 +51,4 @@ This project is inspired by [better-commits](https://github.com/Everduin94/bette
 
 🎉 Happy committing! 🚀
 
+test

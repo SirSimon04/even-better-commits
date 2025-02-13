@@ -42,5 +42,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/SirSimon04/even-better-commits"
-  }
+  },
+  "files": [
+    "build/",
+    "build/scripts/",
+    "build/config/",
+    "build/llm/",
+    "build/prompts/",
+    "package.json",
+    "README.md"
+  ]
 }
