@@ -1,16 +1,21 @@
 {
   "name": "even-better-commits",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "./build/scripts/ebc.js",
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "jest",
     "build": "npx tsc && cp -r src/prompts build/prompts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "typescript",
+    "cli",
+    "git",
+    "commit"
+  ],
+  "author": "Stefan Rudi & Simon Engel",
+  "license": "MIT",
+  "description": "A tool to help you write better commit messages with the help of AI",
   "dependencies": {
     "@clack/prompts": "^0.9.1",
     "@sap-ai-sdk/orchestration": "^1.7.0",
