@@ -20,16 +20,6 @@ Ensure that commit messages follow the following format: <type>(<scope>): <descr
 - tools: Everything else
 - none: Use this value when you think no scope is needed
 
-Our projects are structured likes this:
-"""
-project/         # Your project's root folder
-├─ app/          # UI-related content
-├─ srv/          # Service-related content
-├─ db/           # Domain models and database-related content
-├─ package.json  # Configuration for cds + cds-dk
-└─ readme.md     # A readme placeholder
-"""
-
 <subject> is a concise description of the change in imperative mood
 
 Please output not the commit message itself but return an object in this format:
