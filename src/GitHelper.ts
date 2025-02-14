@@ -7,6 +7,7 @@ export type CommitParts = {
 };
 
 export class GitHelper {
+  private static readonly commitRegex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
   getStagedFiles(): string[] {
     try {
       // Execute `git status --porcelain`
@@ -102,16 +103,33 @@ export class GitHelper {
 
   static parseCommitMessage(commit: string): CommitParts {
     const trimmedCommit = commit.trim();
-    const regex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
-    const result = trimmedCommit.match(regex);
+    const result = trimmedCommit.match(this.commitRegex);
 
     if (!result) {
       //throw new Error("Invalid commit message format");
       // Instead of throwing an error, return an object with empty strings
-      return { type: "", scope: "", message: "" }; 
+      return { type: "", scope: "", message: "" };
     }
 
     const [, type, scope, message] = result;
     return { type, ...(scope ? { scope } : {}), message };
+  }
+
+  static getLastCommitMessages(count: number = 20): string[] {
+    try {
+      // Get the last `count` commit messages using `git log`
+      const output = execSync(`git log -n ${count} --pretty=format:%s`, {
+        encoding: "utf-8",
+      });
+
+      // Split, filter, and return only valid commit messages
+      return output
+        .split("\n")
+        .map((msg) => msg.trim())
+        .filter((msg) => this.commitRegex.test(msg));
+    } catch (error) {
+      console.error("Failed to retrieve commit messages:", error);
+      return [];
+    }
   }
 }
