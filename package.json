@@ -5,7 +5,9 @@
   "scripts": {
     "test": "jest",
     "build": "npx tsc && cp -r src/prompts build/prompts",
-    "start": "./build/scripts/ebc.js"
+    "start": "./build/scripts/ebc.js",
+    "start-setup": "./build/scripts/ebc-setup.js"
+
   },
   "keywords": [
     "typescript",

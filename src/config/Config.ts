@@ -5,6 +5,7 @@ import os from "os";
 export type ConfigFile = {
   provider: string;
   providerDetails: any;
+  loadLastCommitMessages?: number;
 };
 
 export class Config {
