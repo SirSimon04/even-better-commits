@@ -22,4 +22,4 @@ Ensure that commit messages follow the following format: <type>(<scope>): <descr
 
 <subject> is a concise description of the change in imperative mood
 
-Please only output the commit message in a single line, without any quotes around it. Do not include the intent of what is done but only the change made. Create only one commit message.
+Please output the commit message in a single line, putting them in triple backticks. Do not include the intent of what is done but only the change made. Create only one commit message with a maximum of 50 characters.

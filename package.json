@@ -3,9 +3,10 @@
   "version": "0.0.3",
   "main": "./build/scripts/ebc.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node src/scripts/ebc.ts",
     "test": "jest",
-    "build": "npx tsc && cp -r src/prompts build/prompts"
+    "build": "npx tsc && cp -r src/prompts build/prompts",
+    "start-dev": "./build/scripts/ebc.js"
   },
   "keywords": [
     "typescript",
