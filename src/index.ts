@@ -218,7 +218,7 @@ async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
   const commitMessage = await llm.call(diff);
   s.stop("Generated commit message.");
 
-  return commitMessage;
+  return commitMessage.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
 }
 
 // Function to clear the screen
