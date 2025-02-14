@@ -1,6 +1,6 @@
 {
   "name": "even-better-commits",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "main": "./build/scripts/ebc.js",
   "scripts": {
     "test": "jest",
