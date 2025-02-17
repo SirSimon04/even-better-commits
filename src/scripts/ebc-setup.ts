@@ -15,7 +15,7 @@ async function main() {
   intro("Setup even-better-commits");
   try {
     await setup();
-    outro("Setup complete.");
+    outro("Setup completed.");
   } catch (error) {
     outro("Setup canceled.");
   }

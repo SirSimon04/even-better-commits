@@ -1,7 +1,9 @@
 import { OrchestrationClient } from "@sap-ai-sdk/orchestration";
+import { ConfigurationApi, DeploymentApi } from '@sap-ai-sdk/ai-api';
+import type { AiDeploymentCreationResponse, AiDeploymentList, AiApiError } from '@sap-ai-sdk/ai-api';
 import { ConfigFile } from "../config/Config";
 import { LLM } from "./LLM";
-import { isCancel, select, log } from "@clack/prompts";
+import { isCancel, select, log, cancel, outro, spinner } from "@clack/prompts";
 import { PromptBuilder } from "../PromptBuilder";
 
 export class AICore implements LLM {
@@ -27,6 +29,30 @@ export class AICore implements LLM {
   }
 
   async setup(): Promise<ConfigFile> {
+    // Check deployment for global orchestration service
+    const defaultOrchestration: Boolean = await this.checkOrchestrationDeployment();
+    if(!defaultOrchestration) {
+      log.warning("No orchestration deployment found under default resource group!");
+      var options = await select({
+        message: "Do you want to create an orchestration deployment?",
+        options: [
+          { value: true, label: "Yes" },
+          { value: false, label: "No" },
+        ],
+      });
+
+      if(!options || isCancel(options)) {
+        cancel("Operation cancelled.");
+        process.exit(1);
+      }
+
+      // Create orchestration deployment      
+      const s = spinner();
+      s.start("Creating Orchestration Deployment");
+      const config = await this.createOrchestrationConfig();      
+      const deployment = await this.createDeployment(config.id);
+      s.stop("Orchestration deployment created with ID: " + deployment.id);
+    }
     try {
       const selectModel = await select({
         message: "Select the model you want to use",
@@ -44,10 +70,7 @@ export class AICore implements LLM {
           { value: "anthropic--claude-3-sonnet", label: "Claude 3 Sonnet" },
           { value: "anthropic--claude-3.5-sonnet", label: "Claude 3.5 Sonnet" },
           { value: "meta--llama3-70b-instruct", label: "LLaMA 3 70B Instruct" },
-          {
-            value: "meta--llama3.1-70b-instruct",
-            label: "LLaMA 3.1 70B Instruct",
-          },
+          { value: "meta--llama3.1-70b-instruct", label: "LLaMA 3.1 70B Instruct"},
         ],
       });
 
@@ -72,5 +95,46 @@ export class AICore implements LLM {
 
   toString(): string {
     return "SAP AI Core with " + this.model + " model";
+  }
+
+  async checkOrchestrationDeployment(resourceGroup?: string): Promise<boolean> {
+    const list : AiDeploymentList = await this.getDeployments(resourceGroup);
+    if( list.resources.some(s => s.scenarioId == 'orchestration' && s.status === 'RUNNING') ) {
+      return true;
+    }
+    return false;
+  }
+
+  async getDeployments(resourceGroup?: string): Promise<AiDeploymentList> {
+    return DeploymentApi.deploymentQuery({}, { 'AI-Resource-Group': resourceGroup ? resourceGroup : 'default' }).execute();
+  }
+
+  async createOrchestrationConfig() {
+    const requestBody = {
+      name: 'orchestration-config',
+      executableId: 'orchestration',
+      scenarioId: 'orchestration',
+      inputArtifactBindings: []
+    };
+  
+    try {
+      const responseData =
+        await ConfigurationApi
+          .configurationCreate(requestBody, {'AI-Resource-Group': 'default'}) // use default resource group
+          .execute();
+
+      return responseData;
+    } catch (errorData: any) {
+      const apiError = errorData.response.data.error as AiApiError;
+      console.error('Status code:', errorData.response.status);
+      throw new Error(`Configuration creation failed: ${apiError.message}`);
+    }
+  }
+
+  async createDeployment(configurationId: string): Promise<AiDeploymentCreationResponse> {
+    return DeploymentApi.deploymentCreate(
+      { configurationId },
+      { 'AI-Resource-Group': 'default' }
+    ).execute();
   }
 }
