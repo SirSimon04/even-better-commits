@@ -8,7 +8,9 @@ console.log = () => {};
 console.error = () => {};
 console.warn = () => {};
 
-import { main, restoreScreen } from "..";
+import { main } from "..";
+import { clearScreen, restoreScreen } from "../utils";
 
+clearScreen();
 main();
 restoreScreen();

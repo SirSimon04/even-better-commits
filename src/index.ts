@@ -13,13 +13,9 @@ import {
 import color from "picocolors";
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
-import { Config } from "./config/Config";
-import { LLMFactory } from "./llm/LLMFactory";
-import { setup } from "./setup";
-import { selectType } from "./utils";
+import { getLLMElseSetup, selectType } from "./utils";
 
 export async function main() {
-  clearScreen(); // Clear the screen to make fullscreen
   intro("Welcome to even-better-commits!");
 
   var git = new GitHelper();
@@ -28,18 +24,7 @@ export async function main() {
     return;
   }
 
-  let llm: LLM;
-  //-----------------------------------------------------
-  // config
-  try {
-    var config = Config.getInstance().getConfigFile();
-
-    llm = LLMFactory.build(config);
-  } catch (error) {
-    log.info("No config file found. Setting up...");
-    //llm = LLMFactory.buildWithoutConfig("mock");
-    llm = await setup();
-  }
+  let llm: LLM = await getLLMElseSetup();
 
   log.info("Using " + llm.toString());
 
@@ -177,14 +162,4 @@ async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
   s.stop("Generated commit message.");
 
   return commitMessage.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
-}
-
-// Function to clear the screen
-function clearScreen() {
-  console.clear(); // Clears terminal
-  process.stdout.write("\x1b[?25l"); // Hide cursor
-}
-
-export function restoreScreen() {
-  process.stdout.write("\x1b[?25h"); // Show cursor
 }

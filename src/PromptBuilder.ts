@@ -75,4 +75,30 @@ export class PromptBuilder {
 
     return template;
   }
+
+  buildTemplateForBranch(issueData: any): any[] {
+    let template = [];
+
+    template.push({
+      role: "system",
+      content:
+        "You are an expert in creating names for git branches. You are being provided with the information of an issue in GitHub. Use this information to create a branch name that is descriptive and easy to understand. The branch name should be a maximum of 4 words, but they should be as descriptive as possible. Only output the branch name, do not include any other information.",
+    });
+
+    const llmInfo = this.getEbcInfoFile();
+    if (llmInfo) {
+      log.info("Using from local .ebcinfo file");
+      template.push({
+        role: "system",
+        content: `Here is some additional information that describes the project where the change is made: \n \n ${llmInfo}`,
+      });
+    }
+
+    template.push({
+      role: "user",
+      content: "```data \n \n" + JSON.stringify(issueData) + "```",
+    });
+
+    return template;
+  }
 }

@@ -132,4 +132,22 @@ export class GitHelper {
       return [];
     }
   }
+
+  checkoutBranch(branchName: string) {
+    try {
+      execSync(`git checkout ${branchName}`, { stdio: "inherit" });
+      console.log("Switched to branch", branchName);
+    } catch (error) {
+      console.error("Failed to checkout branch:", error);
+    }
+  }
+
+  createBranch(branchName: string) {
+    try {
+      execSync(`git checkout -b ${branchName}`, { stdio: "inherit" });
+      console.log("Branch created:", branchName);
+    } catch (error) {
+      console.error("Failed to create branch:", error);
+    }
+  }
 }

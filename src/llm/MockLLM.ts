@@ -4,6 +4,10 @@ import { LLM } from "./LLM";
 export class MockLLM implements LLM {
   constructor(config: ConfigFile) {}
 
+  async generateBranchName(issueInfo: any): Promise<string> {
+    return "some mock changes";
+  }
+
   configure(config: ConfigFile): void {}
   setup(): Promise<ConfigFile> {
     return Promise.resolve({ provider: "mock", providerDetails: {} });

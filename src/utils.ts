@@ -1,4 +1,8 @@
-import { select } from "@clack/prompts";
+import { log, select } from "@clack/prompts";
+import { LLM } from "./llm/LLM";
+import { Config } from "./config/Config";
+import { LLMFactory } from "./llm/LLMFactory";
+import { setup } from "./setup";
 
 export const selectType = (type: string) =>
   select({
@@ -44,3 +48,30 @@ export const selectType = (type: string) =>
       },
     ],
   });
+
+// Function to clear the screen
+export function clearScreen() {
+  console.clear(); // Clears terminal
+  process.stdout.write("\x1b[?25l"); // Hide cursor
+}
+
+export function restoreScreen() {
+  process.stdout.write("\x1b[?25h"); // Show cursor
+}
+
+export async function getLLMElseSetup(): Promise<LLM> {
+  let llm: LLM;
+  //-----------------------------------------------------
+  // config
+  try {
+    var config = Config.getInstance().getConfigFile();
+
+    llm = LLMFactory.build(config);
+  } catch (error) {
+    log.info("No config file found. Setting up...");
+    //llm = LLMFactory.buildWithoutConfig("mock");
+    llm = await setup();
+  }
+
+  return llm;
+}
