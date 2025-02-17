@@ -5,9 +5,8 @@
   "scripts": {
     "test": "jest",
     "build": "npx tsc && cp -r src/prompts build/prompts",
-    "start": "./build/scripts/ebc.js",
-    "start-setup": "./build/scripts/ebc-setup.js"
-
+    "dev": "ts-node src/scripts/ebc.ts",
+    "dev-setup": "ts-node src/scripts/ebc-setup.ts"
   },
   "keywords": [
     "typescript",
@@ -20,6 +19,7 @@
   "description": "A tool to help you write better commit messages with the help of AI",
   "dependencies": {
     "@clack/prompts": "^0.9.1",
+    "@sap-ai-sdk/ai-api": "^1.8.0",
     "@sap-ai-sdk/orchestration": "^1.7.0",
     "@types/conf": "^2.1.0",
     "conf": "^13.1.0",
