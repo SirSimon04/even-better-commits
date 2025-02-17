@@ -46,12 +46,10 @@ export class AICore implements LLM {
         process.exit(1);
       }
 
-      // Create orchestration deployment
-      log.info("Setup Orchestration Service");
+      // Create orchestration deployment      
       const s = spinner();
-      s.start("Creating Orchestration Configuration");
-      const config = await this.createOrchestrationConfig();
-      s.message("Creating Orchestration Deployment");
+      s.start("Creating Orchestration Deployment");
+      const config = await this.createOrchestrationConfig();      
       const deployment = await this.createDeployment(config.id);
       s.stop("Orchestration deployment created with ID: " + deployment.id);
     }
