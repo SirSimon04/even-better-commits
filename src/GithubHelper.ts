@@ -15,4 +15,30 @@ export class GithubHelper {
       throw new Error("Failed to fetch issue data.");
     }
   }
+
+  checkIfLoggedIn(): boolean {
+    try {
+      const originUrl = execSync("git remote get-url origin", {
+        encoding: "utf-8",
+      }).trim();
+
+      const match = originUrl.match(/(?:https:\/\/|git@)([^:/]+)/);
+      if (!match) {
+        console.error("Could not determine repository origin.");
+        return false;
+      }
+      const githubHost = match[1];
+
+      const output = execSync("gh auth status", { encoding: "utf-8" });
+
+      const loginRegex = new RegExp(`Logged in to ${githubHost} as`);
+      if (loginRegex.test(output)) {
+        return true;
+      }
+    } catch (error) {
+      console.error("Error checking GitHub authentication status:");
+    }
+
+    return false;
+  }
 }

@@ -52,6 +52,15 @@ export async function createBranch() {
 
   if (issueNumber) {
     try {
+      const isLogged = github.checkIfLoggedIn();
+
+      if (!isLogged) {
+        log.error(
+          "Not logged in to GitHub. Please login to GitHub using `gh auth login`.",
+        );
+        throw new Error("Not logged in to GitHub.");
+      }
+
       s.start("Fetching issue description...");
       const issueData = await github.fetchIssueData(parseInt(issueNumber));
       s.stop("Issue description fetched successfully.");
