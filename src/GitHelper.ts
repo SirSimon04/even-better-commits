@@ -1,3 +1,4 @@
+import { log } from "@clack/prompts";
 import { execSync } from "child_process";
 
 export type CommitParts = {
@@ -133,21 +134,12 @@ export class GitHelper {
     }
   }
 
-  checkoutBranch(branchName: string) {
-    try {
-      execSync(`git checkout ${branchName}`, { stdio: "inherit" });
-      console.log("Switched to branch", branchName);
-    } catch (error) {
-      console.error("Failed to checkout branch:", error);
-    }
-  }
-
   createBranch(branchName: string) {
     try {
       execSync(`git checkout -b ${branchName}`, { stdio: "inherit" });
-      console.log("Branch created:", branchName);
     } catch (error) {
-      console.error("Failed to create branch:", error);
+      log.error("Failed to create branch.");
+      throw new Error("Failed to create branch.");
     }
   }
 }

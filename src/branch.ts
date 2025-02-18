@@ -54,11 +54,11 @@ export async function createBranch() {
     try {
       s.start("Fetching issue description...");
       const issueData = await github.fetchIssueData(parseInt(issueNumber));
-      s.stop("Description retrieved: " + color.green(shortDescription));
+      s.stop("Issue description fetched successfully.");
 
-      // generate a short description from the issue title
-
+      s.start("Generating branch name...");
       shortDescription = await llm.generateBranchName(issueData);
+      s.stop("Branch name generated successfully.");
     } catch (error) {
       s.stop(
         "Failed to generate issue description. Please provide it manually.",
@@ -88,10 +88,12 @@ export async function createBranch() {
 
   log.success("Creating branch: " + color.green(branchName));
 
-  git.createBranch(branchName);
-  git.checkoutBranch(branchName);
-
-  outro(
-    "Branch successfully created and switched to " + color.green(branchName),
-  );
+  try {
+    git.createBranch(branchName);
+    outro(
+      "Branch successfully created and switched to " + color.green(branchName),
+    );
+  } catch (error) {
+    outro("Terminating even-better-branch");
+  }
 }
