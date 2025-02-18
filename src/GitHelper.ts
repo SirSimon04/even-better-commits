@@ -99,11 +99,11 @@ export class GitHelper {
     // Ensure executing git add in the root of the repository
     const gitRoot = this.findGitRoot();
     const originalDir = process.cwd();
-    
+
     try {
       process.chdir(gitRoot);
       // Run `git add` on all provided files
-      execSync(`git add ${files.join(" ")}`, { stdio: "inherit" });
+      execSync(`git add ${files.map(file => `"${file}"`).join(" ")}`, { stdio: "inherit" });
     } catch (error) {
       console.error("Failed to stage files:", error);
     } finally {
