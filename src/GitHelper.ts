@@ -1,5 +1,7 @@
 import { log } from "@clack/prompts";
 import { execSync } from "child_process";
+import { existsSync } from "fs";
+import { resolve } from "path";
 
 export type CommitParts = {
   type: string;
@@ -89,16 +91,24 @@ export class GitHelper {
   }
 
   stageFiles(files: string[]): void {
-    try {
-      if (files.length === 0) {
-        console.log("No files to stage.");
-        return;
-      }
+    if (files.length === 0) {
+      console.log("No files to stage.");
+      return;
+    }
 
+    // Ensure executing git add in the root of the repository
+    const gitRoot = this.findGitRoot();
+    const originalDir = process.cwd();
+    
+    try {
+      process.chdir(gitRoot);
       // Run `git add` on all provided files
       execSync(`git add ${files.join(" ")}`, { stdio: "inherit" });
     } catch (error) {
       console.error("Failed to stage files:", error);
+    } finally {
+      // Restore the original working directory
+      process.chdir(originalDir);
     }
   }
 
@@ -141,5 +151,18 @@ export class GitHelper {
       log.error("Failed to create branch.");
       throw new Error("Failed to create branch.");
     }
+  }
+
+  private findGitRoot(startPath: string = process.cwd()): string {
+    let currentPath = resolve(startPath);
+    
+    while (currentPath !== '/' && currentPath !== '') {
+      if (existsSync(`${currentPath}/.git`)) {
+        return currentPath;
+      }
+      currentPath = resolve(currentPath, '..');
+    }
+    
+    throw new Error('Not a git repository (or any of the parent directories)');
   }
 }
