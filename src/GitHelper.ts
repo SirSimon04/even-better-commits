@@ -1,3 +1,4 @@
+import { log } from "@clack/prompts";
 import { execSync } from "child_process";
 
 export type CommitParts = {
@@ -130,6 +131,15 @@ export class GitHelper {
     } catch (error) {
       console.error("Failed to retrieve commit messages:", error);
       return [];
+    }
+  }
+
+  createBranch(branchName: string) {
+    try {
+      execSync(`git checkout -b ${branchName}`, { stdio: "inherit" });
+    } catch (error) {
+      log.error("Failed to create branch.");
+      throw new Error("Failed to create branch.");
     }
   }
 }

@@ -8,9 +8,9 @@ console.log = () => {};
 console.error = () => {};
 console.warn = () => {};
 
-import { main } from "..";
+import { createBranch } from "../branch";
 import { clearScreen, restoreScreen } from "../utils";
 
 clearScreen();
-main();
+createBranch();
 restoreScreen();
