@@ -5,34 +5,36 @@ import { GitHelper } from "./GitHelper";
 import { Config } from "./config/Config";
 
 export class PromptBuilder {
-  private readonly _SYSTEM_MESSAGE: string = path.join(
-    __dirname, // directory of this file
-    "prompts",
-    "system_message.md",
-  );
+  // Paths configuration for all prompt files
+  readonly PROMPT_PATHS = {
+    commit_system_message: path.join(__dirname, "prompts", "system_message.md"),
+    branch_system_message: path.join(__dirname, "prompts", "branch_system_message.md"),
+    project_specific_template: path.join(__dirname, "prompts", "project_specific_template.md"),
+    commit_history_template: path.join(__dirname, "prompts", "commit_history_template.md"),
+    git_diff_template: path.join(__dirname, "prompts", "git_diff_template.md"),
+    github_issue_template: path.join(__dirname, "prompts", "github_issue_template.md"),
+  };
 
-  private readonly _BRANCH_SYSTEM_MESSAGE: string = path.join(
-    __dirname, // directory of this file
-    "prompts",
-    "branch_system_prompt.md",
-  );
-
-  getCommitMessageSystemPrompt(): string {
+  // Reads content from a prompt file
+  private readPromptFile(filePath: string): string {
     try {
-      const msg = fs.readFileSync(this._BRANCH_SYSTEM_MESSAGE, "utf-8");
-      return msg;
+      return fs.readFileSync(filePath, "utf-8");
     } catch (error) {
-      throw new Error("Error reading system message file:" + error);
+      console.error(`Error reading prompt file ${filePath}:`, error);
+      return "";
     }
   }
 
-  getBranchNameSystemPrompt(): string {
-    try {
-      const msg = fs.readFileSync(this._SYSTEM_MESSAGE, "utf-8");
-      return msg;
-    } catch (error) {
-      throw new Error("Error reading system message file:" + error);
-    }
+  private getCommitSystemMessage(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.commit_system_message);
+  }
+
+  private getBranchSystemMessage(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.branch_system_message);
+  }
+
+  private getCommitHistoryTemplate(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.commit_history_template);
   }
 
   getEbcInfoFile() {
@@ -52,7 +54,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content: this.getCommitMessageSystemPrompt(),
+      content: this.getCommitSystemMessage(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -60,7 +62,9 @@ export class PromptBuilder {
       log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
-        content: `Here is some additional information that describes the project where the change is made: \n \n ${llmInfo}`,
+        content: 
+        this.readPromptFile(this.PROMPT_PATHS.project_specific_template)
+            .replace("{{project_specific_info}}", llmInfo),
       });
     }
 
@@ -74,17 +78,20 @@ export class PromptBuilder {
         config.loadLastCommitMessages,
       );
       if (commitMessages.length > 0) {
-        console.log(commitMessages);
+        const commitHistoryTemplate = this.getCommitHistoryTemplate();        
         template.push({
           role: "system",
-          content: `Here are the last commit messages in this repository. Use them to get to know how the message is usually written, to get the tone and the language specific format. Use them to create a commit that sounds similar:\n\n${commitMessages.join("\n")}`,
+          content: commitHistoryTemplate.replace("{{commit_history}}", commitMessages.join("\n")),
         });
       }
     }
 
+    // Add git diff to the template
+    const gitDiffTemplate = this.readPromptFile(this.PROMPT_PATHS.git_diff_template);
+
     template.push({
       role: "user",
-      content: "```diff \n \n" + diff + "```",
+      content: gitDiffTemplate.replace("{{git_diff}}", diff),
     });
 
     return template;
@@ -95,7 +102,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content: this.getBranchNameSystemPrompt(),
+      content: this.getBranchSystemMessage(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -103,7 +110,9 @@ export class PromptBuilder {
       log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
-        content: `Here is some additional information that describes the project where the change is made: \n \n ${llmInfo}`,
+        content: 
+        this.readPromptFile(this.PROMPT_PATHS.project_specific_template)
+            .replace("{{project_specific_info}}", llmInfo),
       });
     }
 
