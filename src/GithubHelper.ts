@@ -9,7 +9,6 @@ export class GithubHelper {
           encoding: "utf-8",
         },
       );
-      console.log(JSON.parse(output));
       return JSON.parse(output);
     } catch (error) {
       throw new Error("Failed to fetch issue data.");
@@ -26,7 +25,6 @@ export class GithubHelper {
       // Extract the hostname (e.g., github.com, github.enterprise.com, etc.)
       const match = originUrl.match(/(?:https:\/\/|git@)([^:/]+)/);
       if (!match) {
-        console.error("Could not determine repository origin.");
         return false;
       }
       const githubHost = match[1];

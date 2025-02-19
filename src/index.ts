@@ -14,6 +14,7 @@ import color from "picocolors";
 import { GitHelper } from "./GitHelper";
 import { LLM } from "./llm/LLM";
 import { getLLMElseSetup, selectType } from "./utils";
+import { PromptBuilder } from "./PromptBuilder";
 
 export async function main() {
   intro("Welcome to even-better-commits!");
@@ -161,5 +162,5 @@ async function getCommitMessage(diff: string, llm: LLM): Promise<string> {
   const commitMessage = await llm.call(diff);
   s.stop("Generated commit message.");
 
-  return commitMessage.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
+  return PromptBuilder.removeBackticks(commitMessage);
 }

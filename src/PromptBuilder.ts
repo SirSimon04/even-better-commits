@@ -11,13 +11,27 @@ export class PromptBuilder {
     "system_message.md",
   );
 
+  private readonly _BRANCH_SYSTEM_MESSAGE: string = path.join(
+    __dirname, // directory of this file
+    "prompts",
+    "branch_system_prompt.md",
+  );
+
   getCommitMessageSystemPrompt(): string {
+    try {
+      const msg = fs.readFileSync(this._BRANCH_SYSTEM_MESSAGE, "utf-8");
+      return msg;
+    } catch (error) {
+      throw new Error("Error reading system message file:" + error);
+    }
+  }
+
+  getBranchNameSystemPrompt(): string {
     try {
       const msg = fs.readFileSync(this._SYSTEM_MESSAGE, "utf-8");
       return msg;
     } catch (error) {
-      console.error("Error reading system message file:", error);
-      return "";
+      throw new Error("Error reading system message file:" + error);
     }
   }
 
@@ -81,8 +95,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content:
-        "You are an expert in creating names for git branches. You are being provided with the information of an issue in GitHub. Use this information to create a branch name that is descriptive and easy to understand. The branch name should be a maximum of 4 words, but they should be as descriptive as possible. Only output the branch name, do not include any other information.",
+      content: this.getBranchNameSystemPrompt(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -100,5 +113,9 @@ export class PromptBuilder {
     });
 
     return template;
+  }
+
+  static removeBackticks(text: string): string {
+    return text.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
   }
 }

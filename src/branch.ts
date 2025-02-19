@@ -3,7 +3,6 @@ import {
   intro,
   outro,
   text,
-  select,
   isCancel,
   cancel,
   spinner,
@@ -13,6 +12,7 @@ import { GitHelper } from "./GitHelper";
 import { getLLMElseSetup, selectType } from "./utils";
 import { GithubHelper } from "./GithubHelper";
 import { LLM } from "./llm/LLM";
+import { PromptBuilder } from "./PromptBuilder";
 
 export async function createBranch() {
   intro("Welcome to even-better-branch!");
@@ -29,81 +29,88 @@ export async function createBranch() {
     return;
   }
 
-  const branchType = await selectType("feat");
-  if (isCancel(branchType)) {
-    cancel("Operation cancelled.");
-    return;
-  }
+  let branchName = "";
 
-  let issueNumber = await text({
-    message: "Enter issue number (optional):",
-    placeholder: "Leave empty if not applicable",
-    validate: (value) =>
-      value && isNaN(parseInt(value)) ? "Must be a number" : undefined,
-  });
+  const isLogged = github.checkIfLoggedIn();
 
-  if (isCancel(issueNumber)) {
-    cancel("Operation cancelled.");
-    return;
-  }
+  if (!isLogged) {
+    log.warning(
+      "You are not logged in to GitHub. The generation of a branch name will not work automatically from issue content. If you want to use this feature, please login to GitHub using `gh auth login`.",
+    );
 
-  let shortDescription = "";
-  const s = spinner();
-
-  if (issueNumber) {
-    try {
-      s.start("Fetching issue description...");
-      const isLogged = github.checkIfLoggedIn();
-      console.log(isLogged);
-
-      if (!isLogged) {
-        log.error(
-          "Not logged in to GitHub. Please login to GitHub using `gh auth login`.",
-        );
-        throw new Error("Not logged in to GitHub.");
-      }
-
-      const issueData = await github.fetchIssueData(parseInt(issueNumber));
-      s.stop("Issue description fetched successfully.");
-
-      s.start("Generating branch name...");
-      shortDescription = await llm.generateBranchName(issueData);
-      s.stop("Branch name generated successfully.");
-    } catch (error) {
-      s.stop(
-        "Failed to generate issue description. Please provide it manually.",
-      );
-      shortDescription = (
-        await text({ message: "Enter short description:" })
-      ).toString();
-    }
+    branchName = await createBranchNameManually();
   } else {
-    shortDescription = (
-      await text({ message: "Enter short description:" })
-    ).toString();
+    let issueNumber = await text({
+      message: "Enter issue number (optional):",
+      placeholder: "Leave empty if not applicable",
+      validate: (value) =>
+        value && isNaN(parseInt(value)) ? "Must be a number" : undefined,
+    });
+
+    if (isCancel(issueNumber)) {
+      cancel("Operation cancelled.");
+      process.exit(0);
+    }
+
+    try {
+      branchName = await createBranchNameAutomatically(
+        parseInt(issueNumber),
+        github,
+        llm,
+      );
+    } catch (error) {
+      branchName = await createBranchNameManually();
+    }
   }
 
-  if (isCancel(shortDescription)) {
-    cancel("Operation cancelled.");
-    return;
-  }
-
-  shortDescription = shortDescription
-    .replace(/\s+/g, "-")
-    .replace(/-+$/, "")
-    .toLowerCase();
-  const branchName = issueNumber
-    ? `${branchType}/${issueNumber}-${shortDescription}`
-    : `${branchType}/${shortDescription}`;
+  // TODO: Logic for confirming the name or edit it
 
   log.success("Creating branch: " + color.green(branchName));
 
   try {
-    git.createBranch(branchName);
+    //git.createBranch(branchName);
     outro(
       "Branch successfully created and switched to " + color.green(branchName),
     );
   } catch (error) {
     outro("Terminating even-better-branch");
   }
+}
+
+async function createBranchNameManually(): Promise<string> {
+  const branchType = await selectType("feat");
+  if (isCancel(branchType)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  let shortDescription = await text({ message: "Enter short description:" });
+
+  if (isCancel(shortDescription)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  shortDescription = shortDescription
+    .replace(/\s+/g, "-")
+    .replace(/-+$/, "")
+    .toLowerCase();
+
+  return `${branchType}/${shortDescription}`;
+}
+
+async function createBranchNameAutomatically(
+  issueNumber: number,
+  github: GithubHelper,
+  llm: LLM,
+): Promise<string> {
+  let shortDescription = "";
+  const spin = spinner();
+  spin.start("Fetching issue description and Generating Branch name");
+  const issueData = await github.fetchIssueData(issueNumber);
+
+  shortDescription = await llm.generateBranchName(issueData);
+  spin.stop("Branch name generated successfully.");
+
+  return PromptBuilder.removeBackticks(shortDescription);
 }
