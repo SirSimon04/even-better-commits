@@ -107,10 +107,17 @@ async function createBranchNameAutomatically(
   let shortDescription = "";
   const spin = spinner();
   spin.start("Fetching issue description and Generating Branch name");
-  const issueData = await github.fetchIssueData(issueNumber);
+  try {
+    const issueData = await github.fetchIssueData(issueNumber);
 
-  shortDescription = await llm.generateBranchName(issueData);
-  spin.stop("Branch name generated successfully.");
+    shortDescription = await llm.generateBranchName(issueData);
+
+    spin.stop("Branch name generated successfully.");
+  } catch (error) {
+    spin.stop("Brancn name generation failed.");
+    log.error("Using manual branch name generation because of failure");
+    throw error;
+  }
 
   return PromptBuilder.removeBackticks(shortDescription);
 }

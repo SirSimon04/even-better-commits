@@ -4,7 +4,7 @@ export class GithubHelper {
   async fetchIssueData(issueNumber: number): Promise<any> {
     try {
       const output = execSync(
-        `gh issue view ${issueNumber} --json title,body,labels,state`,
+        `gh issue view ${issueNumber} --json title,body,labels,state,number`,
         {
           encoding: "utf-8",
         },
