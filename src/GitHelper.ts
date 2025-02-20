@@ -11,6 +11,7 @@ export type CommitParts = {
 
 export class GitHelper {
   private static readonly commitRegex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
+  private static readonly branchRegex = /^(\w+)\/(.+)$/;
   getStagedFiles(): string[] {
     try {
       // Execute `git status --porcelain`
@@ -103,7 +104,9 @@ export class GitHelper {
     try {
       process.chdir(gitRoot);
       // Run `git add` on all provided files
-      execSync(`git add ${files.map(file => `"${file}"`).join(" ")}`, { stdio: "inherit" });
+      execSync(`git add ${files.map((file) => `"${file}"`).join(" ")}`, {
+        stdio: "inherit",
+      });
     } catch (error) {
       console.error("Failed to stage files:", error);
     } finally {
@@ -124,6 +127,19 @@ export class GitHelper {
 
     const [, type, scope, message] = result;
     return { type, ...(scope ? { scope } : {}), message };
+  }
+
+  static parseBranchName(branch: string): { type: string; message: string } {
+    const trimmedBranch = branch.trim();
+    const result = trimmedBranch.match(this.branchRegex);
+
+    if (!result) {
+      // Instead of throwing an error, return an object with empty strings
+      return { type: "", message: "" };
+    }
+
+    const [, type, message] = result;
+    return { type, message };
   }
 
   static getLastCommitMessages(count: number = 20): string[] {
@@ -155,14 +171,14 @@ export class GitHelper {
 
   private findGitRoot(startPath: string = process.cwd()): string {
     let currentPath = resolve(startPath);
-    
-    while (currentPath !== '/' && currentPath !== '') {
+
+    while (currentPath !== "/" && currentPath !== "") {
       if (existsSync(`${currentPath}/.git`)) {
         return currentPath;
       }
-      currentPath = resolve(currentPath, '..');
+      currentPath = resolve(currentPath, "..");
     }
-    
-    throw new Error('Not a git repository (or any of the parent directories)');
+
+    throw new Error("Not a git repository (or any of the parent directories)");
   }
 }

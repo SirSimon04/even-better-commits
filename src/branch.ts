@@ -6,6 +6,8 @@ import {
   isCancel,
   cancel,
   spinner,
+  select,
+  group,
 } from "@clack/prompts";
 import color from "picocolors";
 import { GitHelper } from "./GitHelper";
@@ -33,6 +35,8 @@ export async function createBranch() {
 
   const isLogged = github.checkIfLoggedIn();
 
+  let issueNumber;
+
   if (!isLogged) {
     log.warning(
       "You are not logged in to GitHub. The generation of a branch name will not work automatically from issue content. If you want to use this feature, please login to GitHub using `gh auth login`.",
@@ -40,7 +44,7 @@ export async function createBranch() {
 
     branchName = await createBranchNameManually();
   } else {
-    let issueNumber = await text({
+    issueNumber = await text({
       message: "Enter issue number (optional):",
       placeholder: "Leave empty if not applicable",
       validate: (value) =>
@@ -63,12 +67,73 @@ export async function createBranch() {
     }
   }
 
-  // TODO: Logic for confirming the name or edit it
+  let pushToRemote = false;
+  let branchCreated = false;
+  while (!branchCreated) {
+    const selectOptions = [
+      {
+        value: "c",
+        label: "Create and checkout",
+      },
+      {
+        value: "cc",
+        label: "Create, checkout and push to remote",
+      },
+      { value: "t", label: "Edit the generated branch" },
+    ];
+    if (isLogged) {
+      selectOptions.push({ value: "r", label: "Generate a new branch name" });
+    }
+
+    const continueProcedere: any = await select({
+      message: branchName,
+      options: selectOptions,
+    });
+
+    if (isCancel(continueProcedere)) {
+      cancel("Operation cancelled.");
+      return;
+    }
+
+    if (continueProcedere === "c") {
+      branchCreated = true;
+    } else if (continueProcedere === "cc") {
+      pushToRemote = true;
+      branchCreated = true;
+    } else if (continueProcedere === "r") {
+      branchName = await createBranchNameAutomatically(
+        parseInt(issueNumber!),
+        github,
+        llm,
+      );
+    } else if (continueProcedere === "t") {
+      var commitParts = GitHelper.parseBranchName(branchName);
+
+      const selectionGroup = await group(
+        {
+          type: () => selectType(commitParts.type),
+          message: () =>
+            text({ message: "Message", initialValue: commitParts.message }),
+        },
+        {
+          onCancel: ({ results }) => {
+            cancel("Operation cancelled.");
+            return;
+          },
+        },
+      );
+
+      branchName = `${selectionGroup.type}/${selectionGroup.message}`;
+    }
+  }
 
   log.success("Creating branch: " + color.green(branchName));
 
   try {
-    //git.createBranch(branchName);
+    git.createBranch(branchName);
+    if (pushToRemote) {
+      github.pushBranch(branchName);
+    }
     outro(
       "Branch successfully created and switched to " + color.green(branchName),
     );

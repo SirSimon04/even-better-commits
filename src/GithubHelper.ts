@@ -51,4 +51,8 @@ export class GithubHelper {
 
     return false;
   }
+
+  pushBranch(branchName: string) {
+    execSync(`git push -u origin ${branchName}`, { stdio: "inherit" });
+  }
 }
