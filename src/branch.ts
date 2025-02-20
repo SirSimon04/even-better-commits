@@ -92,7 +92,7 @@ export async function createBranch() {
 
     if (isCancel(continueProcedere)) {
       cancel("Operation cancelled.");
-      return;
+      process.exit(0);
     }
 
     if (continueProcedere === "c") {
@@ -118,7 +118,7 @@ export async function createBranch() {
         {
           onCancel: ({ results }) => {
             cancel("Operation cancelled.");
-            return;
+            process.exit(0);
           },
         },
       );
