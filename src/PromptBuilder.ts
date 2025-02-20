@@ -123,4 +123,8 @@ export class PromptBuilder {
 
     return template;
   }
+
+  static removeBackticks(text: string): string {
+    return text.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
+  }
 }

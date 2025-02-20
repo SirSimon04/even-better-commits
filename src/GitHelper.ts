@@ -11,6 +11,7 @@ export type CommitParts = {
 
 export class GitHelper {
   private static readonly commitRegex = /^(\w+)(?:\(([^)]+)\))?: (.+)$/;
+  private static readonly branchRegex = /^(\w+)\/(.+)$/;
   getStagedFiles(): string[] {
     try {
       // Execute `git status --porcelain`
@@ -126,6 +127,19 @@ export class GitHelper {
     return { type, ...(scope ? { scope } : {}), message };
   }
 
+  static parseBranchName(branch: string): { type: string; message: string } {
+    const trimmedBranch = branch.trim();
+    const result = trimmedBranch.match(this.branchRegex);
+
+    if (!result) {
+      // Instead of throwing an error, return an object with empty strings
+      return { type: "", message: "" };
+    }
+
+    const [, type, message] = result;
+    return { type, message };
+  }
+
   static getLastCommitMessages(count: number = 20): string[] {
     try {
       // Get the last `count` commit messages using `git log`
@@ -164,5 +178,6 @@ export class GitHelper {
     }
     
     throw new Error('Not a git repository (or any of the parent directories)');
+
   }
 }
