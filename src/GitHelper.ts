@@ -104,9 +104,7 @@ export class GitHelper {
     try {
       process.chdir(gitRoot);
       // Run `git add` on all provided files
-      execSync(`git add ${files.map((file) => `"${file}"`).join(" ")}`, {
-        stdio: "inherit",
-      });
+      execSync(`git add ${files.map(file => `"${file}"`).join(" ")}`, { stdio: "inherit" });
     } catch (error) {
       console.error("Failed to stage files:", error);
     } finally {
@@ -171,14 +169,15 @@ export class GitHelper {
 
   private findGitRoot(startPath: string = process.cwd()): string {
     let currentPath = resolve(startPath);
-
-    while (currentPath !== "/" && currentPath !== "") {
+    
+    while (currentPath !== '/' && currentPath !== '') {
       if (existsSync(`${currentPath}/.git`)) {
         return currentPath;
       }
-      currentPath = resolve(currentPath, "..");
+      currentPath = resolve(currentPath, '..');
     }
+    
+    throw new Error('Not a git repository (or any of the parent directories)');
 
-    throw new Error("Not a git repository (or any of the parent directories)");
   }
 }
