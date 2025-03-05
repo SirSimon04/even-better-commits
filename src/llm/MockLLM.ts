@@ -4,6 +4,10 @@ import { LLM } from "./LLM";
 export class MockLLM implements LLM {
   constructor(config: ConfigFile) {}
 
+  async generatePRDetails(changeInfo: any): Promise<string> {
+    throw new Error("Method not implemented.");
+  }
+
   async generateBranchName(issueInfo: any): Promise<string> {
     return "some mock changes";
   }

@@ -7,7 +7,8 @@
     "build": "npx tsc && cp -r src/prompts build/prompts",
     "dev": "ts-node src/scripts/ebc.ts",
     "dev-setup": "ts-node src/scripts/ebc-setup.ts",
-    "dev-branch": "ts-node src/scripts/ebc-branch.ts"
+    "dev-branch": "ts-node src/scripts/ebc-branch.ts",
+    "dev-pr": "ts-node src/scripts/ebc-pr.ts"
   },
   "keywords": [
     "typescript",
@@ -39,7 +40,9 @@
     "ebc": "./build/scripts/ebc.js",
     "ebc-setup": "./build/scripts/ebc-setup.js",
     "ebc-branch": "./build/scripts/ebc-branch.js",
-    "ebb": "./build/scripts/ebc-branch.js"
+    "ebb": "./build/scripts/ebc-branch.js",
+    "ebc-pr": "./build/scripts/ebc-pr.js",
+    "ebp": "./build/scripts/ebc-pr.js"
   },
   "jest": {
     "rootDir": "./test"

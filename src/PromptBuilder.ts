@@ -8,11 +8,28 @@ export class PromptBuilder {
   // Paths configuration for all prompt files
   readonly PROMPT_PATHS = {
     commit_system_message: path.join(__dirname, "prompts", "system_message.md"),
-    branch_system_message: path.join(__dirname, "prompts", "branch_system_message.md"),
-    project_specific_template: path.join(__dirname, "prompts", "project_specific_template.md"),
-    commit_history_template: path.join(__dirname, "prompts", "commit_history_template.md"),
+    branch_system_message: path.join(
+      __dirname,
+      "prompts",
+      "branch_system_message.md",
+    ),
+    project_specific_template: path.join(
+      __dirname,
+      "prompts",
+      "project_specific_template.md",
+    ),
+    commit_history_template: path.join(
+      __dirname,
+      "prompts",
+      "commit_history_template.md",
+    ),
     git_diff_template: path.join(__dirname, "prompts", "git_diff_template.md"),
-    github_issue_template: path.join(__dirname, "prompts", "github_issue_template.md"),
+    pr_system_message: path.join(__dirname, "prompts", "pr.md"),
+    github_issue_template: path.join(
+      __dirname,
+      "prompts",
+      "github_issue_template.md",
+    ),
   };
 
   // Reads content from a prompt file
@@ -23,6 +40,10 @@ export class PromptBuilder {
       console.error(`Error reading prompt file ${filePath}:`, error);
       return "";
     }
+  }
+
+  private getPRSystemMessage(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.pr_system_message);
   }
 
   private getCommitSystemMessage(): string {
@@ -62,9 +83,9 @@ export class PromptBuilder {
       log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
-        content: 
-        this.readPromptFile(this.PROMPT_PATHS.project_specific_template)
-            .replace("{{project_specific_info}}", llmInfo),
+        content: this.readPromptFile(
+          this.PROMPT_PATHS.project_specific_template,
+        ).replace("{{project_specific_info}}", llmInfo),
       });
     }
 
@@ -78,16 +99,21 @@ export class PromptBuilder {
         config.loadLastCommitMessages,
       );
       if (commitMessages.length > 0) {
-        const commitHistoryTemplate = this.getCommitHistoryTemplate();        
+        const commitHistoryTemplate = this.getCommitHistoryTemplate();
         template.push({
           role: "system",
-          content: commitHistoryTemplate.replace("{{commit_history}}", commitMessages.join("\n")),
+          content: commitHistoryTemplate.replace(
+            "{{commit_history}}",
+            commitMessages.join("\n"),
+          ),
         });
       }
     }
 
     // Add git diff to the template
-    const gitDiffTemplate = this.readPromptFile(this.PROMPT_PATHS.git_diff_template);
+    const gitDiffTemplate = this.readPromptFile(
+      this.PROMPT_PATHS.git_diff_template,
+    );
 
     template.push({
       role: "user",
@@ -110,9 +136,9 @@ export class PromptBuilder {
       log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
-        content: 
-        this.readPromptFile(this.PROMPT_PATHS.project_specific_template)
-            .replace("{{project_specific_info}}", llmInfo),
+        content: this.readPromptFile(
+          this.PROMPT_PATHS.project_specific_template,
+        ).replace("{{project_specific_info}}", llmInfo),
       });
     }
 
@@ -124,7 +150,38 @@ export class PromptBuilder {
     return template;
   }
 
+  buildTemplateForPR(changeInfo: string): any[] {
+    let template = [];
+
+    template.push({
+      role: "system",
+      content: this.getPRSystemMessage(),
+    });
+
+    const llmInfo = this.getEbcInfoFile();
+    if (llmInfo) {
+      log.info("Using from local .ebcinfo file");
+      template.push({
+        role: "system",
+        content: this.readPromptFile(
+          this.PROMPT_PATHS.project_specific_template,
+        ).replace("{{project_specific_info}}", llmInfo),
+      });
+    }
+
+    template.push({
+      role: "user",
+      content: "```data \n " + changeInfo + " \n" + +"```",
+    });
+
+    return template;
+  }
+
   static removeBackticks(text: string): string {
     return text.replace(/^```\s*([\s\S]*?)\s*```$/m, "$1").trim();
+  }
+
+  static removeBackticksAndWord(text: string): string {
+    return text.replace(/^```(?:\w+)?\s*([\s\S]*?)\s*```$/m, "$1").trim();
   }
 }
