@@ -55,4 +55,15 @@ export class GithubHelper {
   pushBranch(branchName: string) {
     execSync(`git push -u origin ${branchName}`, { stdio: "inherit" });
   }
+
+  createPullRequest(title: string, description: string) {
+    try {
+      const { execSync } = require("child_process");
+      execSync(`gh pr create --title "${title}" --body "${description}"`, {
+        stdio: "inherit",
+      });
+    } catch (error) {
+      throw Error("Failed to create pull request.");
+    }
+  }
 }

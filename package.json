@@ -7,7 +7,8 @@
     "build": "npx tsc && cp -r src/prompts build/prompts",
     "dev": "ts-node src/scripts/ebc.ts",
     "dev-setup": "ts-node src/scripts/ebc-setup.ts",
-    "dev-branch": "ts-node src/scripts/ebc-branch.ts"
+    "dev-branch": "ts-node src/scripts/ebc-branch.ts",
+    "dev-pr": "ts-node src/scripts/ebc-pr.ts"
   },
   "keywords": [
     "typescript",

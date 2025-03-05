@@ -16,6 +16,22 @@ export class AICore implements LLM {
   constructor(config: ConfigFile) {
     this.setDetails(config);
   }
+
+  async generatePRDetails(issueInfo: any): Promise<string> {
+    const orchestrationClient = new OrchestrationClient({
+      llm: {
+        model_name: this.model,
+      },
+      templating: {
+        template: new PromptBuilder().buildTemplateForPR(issueInfo),
+      },
+    });
+
+    const result = await orchestrationClient.chatCompletion();
+
+    return result.getContent() ?? "ERROR";
+  }
+
   async generateBranchName(issueInfo: any): Promise<string> {
     const orchestrationClient = new OrchestrationClient({
       llm: {

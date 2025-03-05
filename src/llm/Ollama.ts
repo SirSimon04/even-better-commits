@@ -19,6 +19,15 @@ export class Ollama implements LLM {
   constructor(config: ConfigFile) {
     this.setDetails(config);
   }
+
+  async generatePRDetails(changeInfo: any): Promise<string> {
+    const response = await ollama.chat({
+      model: this.model,
+      messages: new PromptBuilder().buildTemplateForPR(changeInfo),
+    });
+    return response.message.content;
+  }
+
   async generateBranchName(issueInfo: any): Promise<string> {
     const response = await ollama.chat({
       model: this.model,

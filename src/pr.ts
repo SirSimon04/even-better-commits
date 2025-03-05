@@ -9,7 +9,6 @@ import {
   select,
   group,
 } from "@clack/prompts";
-import color from "picocolors";
 import { GitHelper } from "./GitHelper";
 import { getLLMElseSetup } from "./utils";
 import { GithubHelper } from "./GithubHelper";
@@ -27,6 +26,7 @@ export async function createPullRequest() {
 
   if (!git.inGitRepository()) {
     outro("Not in a git repository. Exiting...");
+
     return;
   }
 
@@ -46,9 +46,17 @@ export async function createPullRequest() {
   spin.start("Fetching changes and generating PR title/description");
 
   try {
-    const changes = git.getChangesSinceBranch("main");
-    ({ title: prTitle, description: prDescription } =
-      await llm.generatePRDetails(changes));
+    const changes = git.getChangesSinceBranch();
+    log.warn(changes.toString());
+    const details = await llm.generatePRDetails(changes);
+
+    const parsedDetails = JSON.parse(
+      PromptBuilder.removeBackticksAndWord(details),
+    );
+
+    prTitle = parsedDetails.title;
+    prDescription = parsedDetails.description;
+
     spin.stop("PR details generated successfully.");
   } catch (error) {
     spin.stop("PR generation failed.");
@@ -82,15 +90,14 @@ export async function createPullRequest() {
         prDescription,
       ));
     } else if (selection === "r") {
-      const changes = git.getChangesSinceBranch("main");
-      ({ title: prTitle, description: prDescription } =
-        await llm.generatePRDetails(changes));
+      const changes = git.getChangesSinceBranch();
+      const prDetails = await llm.generatePRDetails(changes);
     }
   }
 
   log.success("Creating pull request...");
   try {
-    github.createPullRequest(prTitle, prDescription);
+    //github.createPullRequest(prTitle, prDescription);
     outro("Pull request successfully created!");
   } catch (error) {
     outro("Failed to create pull request.");

@@ -169,7 +169,7 @@ export class GitHelper {
     }
   }
 
-  createPR() {
+  getChangesSinceBranch() {
     try {
       const { execSync } = require("child_process");
       return execSync(`git log --oneline main..HEAD`, {
