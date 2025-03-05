@@ -11,18 +11,44 @@ Writing great commit messages is hard. **even-better-commits** makes it easy! It
 
 ## ⚡ Prerequisites
 - Node.js **v22 or higher**
+- [GitHub CLI](https://cli.github.com/) (optional; not needed for basic commits) 
 
 ---
 
 ## 📦 Installation
 ```sh
 npm i -g even-better-commits
+```
 
-# Usage
+## Usage
+even-better-commits offers multiple commands for different use cases: creating commits, creating branches, and opening pull requests.
+
+🚀 **First-time Usage?** No worries! **even-better-commits** will guide you through the initial configuration automatically. You can also run `ebc-setup` anytime to update your settings.
+
+### 📝 Creating a commit
+```sh
 ebc
 ```
-🚀 **First-time setup?** No worries! **even-better-commits** will guide you through the initial configuration automatically. You can also run `ebc-setup` anytime to update your settings.
 
+### 🌿 Creating a Branch
+
+The GitHub CLI (gh) is required for this command.
+
+This command creates a new branch based on a GitHub issue. The issue information is used to generate a descriptive branch name.
+```sh
+ebb
+ebc-branch
+```
+
+### 📤 Opening a Pull Request
+
+The GitHub CLI (gh) is required for this command.
+
+This command opens a pull request based on the commit messages in the current branch. It generates a title and a short overview of the changes, including a list of commits with brief descriptions.
+```sh
+ebp
+ebc-pr
+```
 ---
 
 ## 🧠 AI Providers
