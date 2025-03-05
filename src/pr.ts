@@ -95,7 +95,7 @@ export async function createPullRequest() {
 
   log.success("Creating pull request...");
   try {
-    //github.createPullRequest(prTitle, prDescription);
+    github.createPullRequest(prTitle, prDescription);
     outro("Pull request successfully created!");
   } catch (error) {
     outro("Failed to create pull request.");
