@@ -47,12 +47,9 @@ export async function createPullRequest() {
 
   try {
     const changes = git.getChangesSinceBranch();
-    log.warn(changes.toString());
     const details = await llm.generatePRDetails(changes);
 
-    const parsedDetails = JSON.parse(
-      PromptBuilder.removeBackticksAndWord(details),
-    );
+    const parsedDetails = parsePRDetails(details);
 
     prTitle = parsedDetails.title;
     prDescription = parsedDetails.description;
@@ -68,7 +65,7 @@ export async function createPullRequest() {
   while (!prConfirmed) {
     const options = [
       { value: "c", label: "Confirm and create PR" },
-      { value: "e", label: "Edit PR details" },
+      { value: "e", label: "Edit title" },
       { value: "r", label: "Generate a new PR title/description" },
     ];
 
@@ -85,13 +82,14 @@ export async function createPullRequest() {
     if (selection === "c") {
       prConfirmed = true;
     } else if (selection === "e") {
-      ({ title: prTitle, description: prDescription } = await manualPRInput(
-        prTitle,
-        prDescription,
-      ));
+      prTitle = await manualTitleInput(prTitle);
     } else if (selection === "r") {
       const changes = git.getChangesSinceBranch();
       const prDetails = await llm.generatePRDetails(changes);
+      const parsedDetails = parsePRDetails(prDetails);
+
+      prTitle = parsedDetails.title;
+      prDescription = parsedDetails.description;
     }
   }
 
@@ -125,3 +123,15 @@ async function manualPRInput(initialTitle = "", initialDescription = "") {
 
   return { title: inputGroup.title, description: inputGroup.description };
 }
+
+async function manualTitleInput(initialTitle = ""): Promise<string> {
+  const t = await text({
+    message: "Enter PR title:",
+    initialValue: initialTitle,
+  });
+
+  return t.toString();
+}
+
+const parsePRDetails = (prDetails: string) =>
+  JSON.parse(PromptBuilder.removeBackticksAndWord(prDetails));
