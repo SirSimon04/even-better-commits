@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execSync, spawnSync } from "child_process";
 
 export class GithubHelper {
   async fetchIssueData(issueNumber: number): Promise<any> {
@@ -59,9 +59,13 @@ export class GithubHelper {
   createPullRequest(title: string, description: string) {
     try {
       const { execSync } = require("child_process");
-      execSync(`gh pr create --title "${title}" --body "${description}"`, {
-        stdio: "inherit",
-      });
+      const result = spawnSync(
+        "gh",
+        ["pr", "create", "--title", title, "--body", description],
+        {
+          stdio: "inherit",
+        },
+      );
     } catch (error) {
       throw Error("Failed to create pull request.");
     }
