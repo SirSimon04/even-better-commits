@@ -75,3 +75,20 @@ export async function getLLMElseSetup(): Promise<LLM> {
 
   return llm;
 }
+
+export const checkVersionFlag = () => {
+  const args = process.argv.slice(2);
+
+  // Check for the --version flag
+  if (args.includes("--version") || args.includes("-v")) {
+    // Read the version from package.json
+    try {
+      const packageJson = require("../package.json");
+      console.log(packageJson.version);
+    } catch (error) {
+      console.error("Could not read package.json:", error);
+      process.exit(1);
+    }
+    process.exit(0);
+  }
+};
