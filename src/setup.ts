@@ -34,6 +34,14 @@ export async function setup(): Promise<LLM> {
   if (numberOfLoadedCommits !== undefined)
     config.loadLastCommitMessages = parseInt(numberOfLoadedCommits.toString());
 
+  var mainBranchName = await text({
+    message: "Enter the main branch name",
+    placeholder: "main",
+  });
+
+  if (mainBranchName !== undefined)
+    config.mainBranchName = mainBranchName.toString();
+
   Config.getInstance().writeConfig(config);
 
   log.info("Config file written to " + Config.getInstance().configFilePath);
