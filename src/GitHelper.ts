@@ -2,6 +2,7 @@ import { log } from "@clack/prompts";
 import { execSync } from "child_process";
 import { existsSync } from "fs";
 import { resolve } from "path";
+import { Config } from "./config/Config";
 
 export type CommitParts = {
   type: string;
@@ -172,7 +173,9 @@ export class GitHelper {
   getChangesSinceBranch() {
     try {
       const { execSync } = require("child_process");
-      return execSync(`git log --oneline main..HEAD`, {
+      const mainBranch =
+        Config.getInstance().getConfigFile().mainBranchName ?? "main";
+      return execSync(`git log --oneline ${mainBranch}..HEAD`, {
         encoding: "utf8",
       }).trim();
     } catch (error) {

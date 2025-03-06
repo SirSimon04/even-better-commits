@@ -6,6 +6,7 @@ export type ConfigFile = {
   provider: string;
   providerDetails: any;
   loadLastCommitMessages?: number;
+  mainBranchName?: string;
 };
 
 export class Config {
