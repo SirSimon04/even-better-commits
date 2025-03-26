@@ -7,29 +7,13 @@ import { Config } from "./config/Config";
 export class PromptBuilder {
   // Paths configuration for all prompt files
   readonly PROMPT_PATHS = {
-    commit_system_message: path.join(__dirname, "prompts", "system_message.md"),
-    branch_system_message: path.join(
-      __dirname,
-      "prompts",
-      "branch_system_message.md",
-    ),
-    project_specific_template: path.join(
-      __dirname,
-      "prompts",
-      "project_specific_template.md",
-    ),
-    commit_history_template: path.join(
-      __dirname,
-      "prompts",
-      "commit_history_template.md",
-    ),
-    git_diff_template: path.join(__dirname, "prompts", "git_diff_template.md"),
-    pr_system_message: path.join(__dirname, "prompts", "pr.md"),
-    github_issue_template: path.join(
-      __dirname,
-      "prompts",
-      "github_issue_template.md",
-    ),
+    system_message_commit: path.join(__dirname, "prompts", "system_message.md"),
+    system_message_branch: path.join(__dirname, "prompts", "branch_system_message.md"),
+    system_message_pr: path.join(__dirname, "prompts", "pr.md"),
+    template_diff: path.join(__dirname, "prompts", "git_diff_template.md"),
+    template_project_specific: path.join(__dirname, "prompts", "project_specific_template.md"),
+    template_commit_history: path.join(__dirname, "prompts", "commit_history_template.md"),
+    template_github_issue: path.join(__dirname, "prompts", "github_issue_template.md"),
   };
 
   // Reads content from a prompt file
@@ -42,24 +26,24 @@ export class PromptBuilder {
     }
   }
 
-  private getPRSystemMessage(): string {
-    return this.readPromptFile(this.PROMPT_PATHS.pr_system_message);
+  public getSystemMessageForCommit(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.system_message_commit);
   }
 
-  public getCommitSystemMessage(): string {
-    return this.readPromptFile(this.PROMPT_PATHS.commit_system_message);
+  private getSystemMessageForPR(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.system_message_pr);
   }
 
-  private getBranchSystemMessage(): string {
-    return this.readPromptFile(this.PROMPT_PATHS.branch_system_message);
+  private getSystemMessageForBranch(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.system_message_branch);
   }
 
   private getCommitHistoryTemplate(): string {
-    return this.readPromptFile(this.PROMPT_PATHS.commit_history_template);
+    return this.readPromptFile(this.PROMPT_PATHS.template_commit_history);
   }
 
   public getDiffTemplate(): string {
-    return this.readPromptFile(this.PROMPT_PATHS.git_diff_template);
+    return this.readPromptFile(this.PROMPT_PATHS.template_diff);
   }
 
   getEbcInfoFile() {
@@ -79,7 +63,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content: this.getCommitSystemMessage(),
+      content: this.getSystemMessageForCommit(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -88,7 +72,7 @@ export class PromptBuilder {
       template.push({
         role: "system",
         content: this.readPromptFile(
-          this.PROMPT_PATHS.project_specific_template,
+          this.PROMPT_PATHS.template_project_specific,
         ).replace("{{project_specific_info}}", llmInfo),
       });
     }
@@ -116,7 +100,7 @@ export class PromptBuilder {
 
     // Add git diff to the template
     const gitDiffTemplate = this.readPromptFile(
-      this.PROMPT_PATHS.git_diff_template,
+      this.PROMPT_PATHS.template_diff,
     );
 
     template.push({
@@ -132,7 +116,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content: this.getBranchSystemMessage(),
+      content: this.getSystemMessageForBranch(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -141,7 +125,7 @@ export class PromptBuilder {
       template.push({
         role: "system",
         content: this.readPromptFile(
-          this.PROMPT_PATHS.project_specific_template,
+          this.PROMPT_PATHS.template_project_specific,
         ).replace("{{project_specific_info}}", llmInfo),
       });
     }
@@ -159,7 +143,7 @@ export class PromptBuilder {
 
     template.push({
       role: "system",
-      content: this.getPRSystemMessage(),
+      content: this.getSystemMessageForPR(),
     });
 
     const llmInfo = this.getEbcInfoFile();
@@ -168,7 +152,7 @@ export class PromptBuilder {
       template.push({
         role: "system",
         content: this.readPromptFile(
-          this.PROMPT_PATHS.project_specific_template,
+          this.PROMPT_PATHS.template_project_specific,
         ).replace("{{project_specific_info}}", llmInfo),
       });
     }

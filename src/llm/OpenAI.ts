@@ -20,7 +20,7 @@ export class OpenAi implements LLM {
         const completion = await client.chat.completions.create({
             model: this.model,
             messages: [
-                { role: 'developer', content: new PromptBuilder().getCommitSystemMessage() },
+                { role: 'developer', content: new PromptBuilder().getSystemMessageForCommit() },
                 { role: 'user', content: prompt },
             ],
         });
