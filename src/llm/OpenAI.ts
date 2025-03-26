@@ -2,7 +2,8 @@ import OpenAI from "openai";
 import { ConfigFile } from "../config/Config";
 import { LLM } from "./LLM";
 import { PromptBuilder } from "../PromptBuilder";
-import { isCancel, Option, select } from "@clack/prompts";
+import { isCancel, log, Option, select } from "@clack/prompts";
+import { ChatCompletionMessageParam } from "openai/resources/chat";
 
 export class OpenAi implements LLM {
     model!: string;
@@ -12,27 +13,96 @@ export class OpenAi implements LLM {
     }
 
     async call(diff: string): Promise<string> {
+        // create message object for prompt
+        const prompt: Array<ChatCompletionMessageParam> = [];
+        prompt.push({ role: 'developer', content: new PromptBuilder().getSystemMessageForCommit() });
+
+        // check for ebcinfo file
+        const ebcInfo = new PromptBuilder().getEbcInfoFile();
+        if (ebcInfo) {
+            log.info("Using from local .ebcinfo file");
+            prompt.push({
+                role: "developer",
+                content: new PromptBuilder().getProjectSpecificInfo(ebcInfo),
+            });
+        }
+
         // get git diff for the prompt
         const gitDiffTemplate = new PromptBuilder().getDiffTemplate();
-        const prompt = gitDiffTemplate.replace("{{git_diff}}", diff);
+        const gitDiff = gitDiffTemplate.replace("{{git_diff}}", diff);
+        prompt.push({ role: 'user', content: gitDiff });
 
         const client = new OpenAI();
         const completion = await client.chat.completions.create({
             model: this.model,
-            messages: [
-                { role: 'developer', content: new PromptBuilder().getSystemMessageForCommit() },
-                { role: 'user', content: prompt },
-            ],
+            messages: prompt
         });
 
         return completion.choices[0].message.content ?? "ERROR";
     }
-    generateBranchName(issueInfo: any): Promise<string> {
-        throw new Error("Method not implemented.");
+
+    async generateBranchName(issueInfo: any): Promise<string> {
+        // create message object for prompt
+        const prompt: Array<ChatCompletionMessageParam> = [];
+        prompt.push({ role: 'developer', content: new PromptBuilder().getSystemMessageForBranch() });
+
+        // check for ebcinfo file
+        const ebcInfo = new PromptBuilder().getEbcInfoFile();
+        if (ebcInfo) {
+            log.info("Using from local .ebcinfo file");
+            prompt.push({
+                role: "developer",
+                content: new PromptBuilder().getProjectSpecificInfo(ebcInfo),
+            });
+        }
+        // add issue info to the prompt
+        prompt.push({
+            role: "user",
+            content: "```data \n \n" + JSON.stringify(issueInfo) + "```",
+        });
+
+        // make the call
+        const client = new OpenAI();
+        const completion = await client.chat.completions.create({
+            model: this.model,
+            messages: prompt,
+        });
+
+        return completion.choices[0].message.content ?? "ERROR";
     }
-    generatePRDetails(changeInfo: any): Promise<string> {
-        throw new Error("Method not implemented.");
+
+    async generatePRDetails(changeInfo: any): Promise<string> {
+        // create message object for prompt
+        const prompt: Array<ChatCompletionMessageParam> = [];
+        prompt.push({ role: 'developer', content: new PromptBuilder().getSystemMessageForPR() });
+
+        // check for ebcinfo file
+        const ebcInfo = new PromptBuilder().getEbcInfoFile();
+        if (ebcInfo) {
+            log.info("Using from local .ebcinfo file");
+            prompt.push({
+                role: "developer",
+                content: new PromptBuilder().getProjectSpecificInfo(ebcInfo),
+            });
+        }
+
+        // add change info to the prompt
+        prompt.push({
+            role: "user",
+            content: "```data \n \n" + JSON.stringify(changeInfo) + "```",
+        });
+
+        // make the call
+        const client = new OpenAI();
+        const completion = await client.chat.completions.create({
+            model: this.model,
+            messages: prompt,
+        });
+
+        return completion.choices[0].message.content ?? "ERROR";
     }
+
+
     async setup(): Promise<ConfigFile> {
         try {
             const selectModel = await select({

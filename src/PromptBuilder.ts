@@ -30,11 +30,11 @@ export class PromptBuilder {
     return this.readPromptFile(this.PROMPT_PATHS.system_message_commit);
   }
 
-  private getSystemMessageForPR(): string {
+  public getSystemMessageForPR(): string {
     return this.readPromptFile(this.PROMPT_PATHS.system_message_pr);
   }
 
-  private getSystemMessageForBranch(): string {
+  public getSystemMessageForBranch(): string {
     return this.readPromptFile(this.PROMPT_PATHS.system_message_branch);
   }
 
@@ -46,7 +46,12 @@ export class PromptBuilder {
     return this.readPromptFile(this.PROMPT_PATHS.template_diff);
   }
 
-  getEbcInfoFile() {
+  public getProjectSpecificInfo(ebcInfo: string): string {
+    const template: string = this.readPromptFile(this.PROMPT_PATHS.template_project_specific);
+    return template.replace("{{project_specific_info}}", ebcInfo);    
+  }
+
+  public getEbcInfoFile(): string | undefined {
     try {
       const filePath = path.join(process.cwd(), ".ebcinfo");
 
@@ -124,9 +129,7 @@ export class PromptBuilder {
       log.info("Using from local .ebcinfo file");
       template.push({
         role: "system",
-        content: this.readPromptFile(
-          this.PROMPT_PATHS.template_project_specific,
-        ).replace("{{project_specific_info}}", llmInfo),
+        content: this.getProjectSpecificInfo(llmInfo),
       });
     }
 
