@@ -9,6 +9,7 @@ export async function setup(): Promise<LLM> {
     options: [
       { value: "ollama", label: "Ollama" },
       { value: "aicore", label: "SAP AI Core" },
+      { value: "openai", label: "Open AI" },
       { value: "mock", label: "Simple mock provider" },
     ],
   });

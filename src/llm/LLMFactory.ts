@@ -3,6 +3,7 @@ import { AICore } from "./AICore";
 import { LLM } from "./LLM";
 import { MockLLM } from "./MockLLM";
 import { Ollama } from "./Ollama";
+import { OpenAi } from "./OpenAI";
 
 export class LLMFactory {
   static build(config: ConfigFile): LLM {
@@ -11,6 +12,8 @@ export class LLMFactory {
         return new Ollama(config);
       case "aicore":
         return new AICore(config);
+      case "openai":
+        return new OpenAi(config);
       case "mock":
         return new MockLLM(config);
       default:

@@ -46,7 +46,7 @@ export class PromptBuilder {
     return this.readPromptFile(this.PROMPT_PATHS.pr_system_message);
   }
 
-  private getCommitSystemMessage(): string {
+  public getCommitSystemMessage(): string {
     return this.readPromptFile(this.PROMPT_PATHS.commit_system_message);
   }
 
@@ -56,6 +56,10 @@ export class PromptBuilder {
 
   private getCommitHistoryTemplate(): string {
     return this.readPromptFile(this.PROMPT_PATHS.commit_history_template);
+  }
+
+  public getDiffTemplate(): string {
+    return this.readPromptFile(this.PROMPT_PATHS.git_diff_template);
   }
 
   getEbcInfoFile() {

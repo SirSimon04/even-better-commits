@@ -137,7 +137,7 @@ export class AICore implements LLM {
     return "SAP AI Core with " + this.model + " model";
   }
 
-  async checkOrchestrationDeployment(resourceGroup?: string): Promise<boolean> {
+  private async checkOrchestrationDeployment(resourceGroup?: string): Promise<boolean> {
     const list: AiDeploymentList = await this.getDeployments(resourceGroup);
     if (
       list.resources.some(
@@ -149,14 +149,14 @@ export class AICore implements LLM {
     return false;
   }
 
-  async getDeployments(resourceGroup?: string): Promise<AiDeploymentList> {
+  private async getDeployments(resourceGroup?: string): Promise<AiDeploymentList> {
     return DeploymentApi.deploymentQuery(
       {},
       { "AI-Resource-Group": resourceGroup ? resourceGroup : "default" },
     ).execute();
   }
 
-  async createOrchestrationConfig() {
+  private async createOrchestrationConfig() {
     const requestBody = {
       name: "orchestration-config",
       executableId: "orchestration",
@@ -179,7 +179,7 @@ export class AICore implements LLM {
     }
   }
 
-  async createDeployment(
+  private async createDeployment(
     configurationId: string,
   ): Promise<AiDeploymentCreationResponse> {
     return DeploymentApi.deploymentCreate(
